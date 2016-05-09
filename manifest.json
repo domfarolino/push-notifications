@@ -1,4 +1,24 @@
 {
-  "name": "Push Notifications codelab",
-  "gcm_sender_id": "333252921215"
+  "name": "Push Notifications",
+  "short_name": "Notify",
+  "gcm_sender_id": "333252921215",
+  "icons": [
+    {
+      "src": "192.png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "144.png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "96.png",
+      "sizes": "96x96"
+    }
+  ],
+  "theme_color": "#3F51B5",
+  "background_color": "#3F51B5", 
+  "orientation": "portrait",
+  "display": "standalone",
+  "start_url": "/"
 }
