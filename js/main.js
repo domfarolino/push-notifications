@@ -23,6 +23,7 @@ var reg;
 var sub;
 var isSubscribed = false;
 var subscribeButton = document.querySelector('button');
+var endpointLink = document.getElementById('endpoint');
 
 if ('serviceWorker' in navigator) {
   console.log('Service Worker is supported');
@@ -50,6 +51,7 @@ function subscribe() {
   then(function(pushSubscription) {
     sub = pushSubscription;
     console.log('Subscribed! Endpoint:', sub.endpoint);
+    endpointLink.innerText = sub.endpoint;
     subscribeButton.textContent = 'Unsubscribe';
     isSubscribed = true;
   });
