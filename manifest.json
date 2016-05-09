@@ -16,8 +16,8 @@
       "sizes": "96x96"
     }
   ],
-  "theme_color": "#3F51B5",
-  "background_color": "#3F51B5", 
+  "theme_color": "#db4437",
+  "background_color": "#db4437", 
   "orientation": "portrait",
   "display": "standalone",
   "start_url": "/"
