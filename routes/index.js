@@ -23,8 +23,8 @@ router.post('/subscription', function(request, response, next) {
   console.log("Attempting to use web-push");
   
   var pushPayload = {
-    text: "New Message from Ian Moore",
-    icon: "https://onlinemarketingsoda.files.wordpress.com/2015/09/google-changes-new-logo-rebranding-2015-icon-doodle-square1.png" 
+    text: "Static server payload for now",
+    icon: "https://avatars0.githubusercontent.com/u/19820480?v=3&s=200" 
   }
   
   webPush.sendNotification(request.body.endpoint, {
