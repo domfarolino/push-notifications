@@ -24,6 +24,8 @@ var sub;
 var isSubscribed = false;
 var subscribeButton = document.querySelector('button');
 var endpointLink = document.getElementById('endpoint');
+var publicKeyText = document.getElementById('publicKeyText');
+var authSecretText = document.getElementById('authSecretText');
 
 if ('serviceWorker' in navigator) {
   console.log('Service Worker is supported');
@@ -48,11 +50,48 @@ subscribeButton.addEventListener('click', function() {
 
 function subscribe() {
   reg.pushManager.subscribe({userVisibleOnly: true}).
-  then(function(pushSubscription) {
-    sub = pushSubscription;
-    console.log(JSON.stringify(pushSubscription));
-    console.log('Subscribed! Endpoint:', sub.endpoint);
-    endpointLink.innerText = sub.endpoint;
+  then(function(subscription) {
+    var endpoint = subscription.endpoint;
+    var pubKey, authSecret;
+    var rawPubKey = subscription.getKey('p256dh');
+    var rawAuthSecret = subscription.getKey('auth');
+
+    pubKey = rawPubKey ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawPubKey))) : '';
+    authSecret = rawAuthSecret ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawAuthSecret))) : '';
+    
+    sub = subscription;
+    
+    console.log('Subscribed! Endpoint:', subscription.endpoint);
+    console.log('Public key: ', pubKey);
+    console.log('Private key: ', authSecret);
+
+    var fetchOptions = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json'
+	    }),
+      body: JSON.stringify({
+        endpoint: endpoint,
+        pubKey: pubKey,
+        authSecret: authSecret
+      })
+    };
+    
+    fetch('/subscription', fetchOptions)
+    .then(function(response) {
+      if (response.status >= 400 && response.status < 500) {
+        console.log('Failed web push response: ', response, response.status);
+        throw new Error('Failed to send push message via web push protocol');
+      }
+    })
+    .catch(err => {
+      console.log('Ooops Unable to Send a Push');
+    });
+    
+    // Update UI
+    endpointLink.innerText = subscription.endpoint;
+    publicKeyText.innerText = pubKey;
+    authSecretText.innerText = authSecret;
     subscribeButton.textContent = 'Unsubscribe';
     isSubscribed = true;
   });

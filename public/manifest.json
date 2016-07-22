@@ -2,6 +2,7 @@
   "name": "Push Notifications",
   "short_name": "Notify",
   "gcm_sender_id": "333252921215",
+  "gcm_user_visible_only": true,
   "icons": [
     {
       "src": "images/192.png",

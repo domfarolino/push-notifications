@@ -10,6 +10,8 @@
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="icon" sizes="192x192" href="images/icon.png">
+    <link href="https://fonts.googleapis.com/icon?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheets/style.css">
     <meta name="theme-color" content="#3F51B5">
     
     <!-- Add to homescreen for Safari on iOS -->
@@ -21,13 +23,26 @@
 <body>
 
   <h1>Notify-SW</h1>
+  <a href="https://domfarolino.com">Dom Farolino</a>
 
   <p>This page must be accessed using HTTPS or via localhost.</p>
 
   <button disabled>Subscribe</button>
-  <h2 id="endpoint"></h2>
-  <h2 id="gcm_sender_id">333252921215</h2>
-  <h2 id="api_key">AIzaSyC_i2HqF5w5_-ArGKSsrJRIDPUCT10bDIQ</h2>
+  
+  <h2>GCM Sender ID:</h2>
+  <p class="data-text" id="gcm_sender_id">333252921215</p>
+  
+  <h2>API Key:</h2>
+  <p class="data-text" id="api_key">AIzaSyC_i2HqF5w5_-ArGKSsrJRIDPUCT10bDIQ</p>
+  
+  <h2>Endpoint + Device token:</h2>
+  <p class="data-text" id="endpoint"></p>
+  
+  <h2>Public Key:</h2>
+  <p class="data-text" id="publicKeyText"></p>
+
+  <h2>Auth Secret:</h2>
+  <p class="data-text" id="authSecretText"></p>
 
   <script src="js/main.js"></script>
 
