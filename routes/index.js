@@ -6,13 +6,7 @@ var router  = express.Router();
 process.env['GCM_API_KEY'] = 'AIzaSyC_i2HqF5w5_-ArGKSsrJRIDPUCT10bDIQ';
 webPush.setGCMAPIKey(process.env.GCM_API_KEY);
 
-const storedPushCredentials = [
-  {
-    endpoint: "",
-    pubKey: "",
-    authSecret: ""
-  },
-];
+var storedPushCredentials = [];
 
 /* GET home page. */
 router.get('/', function(request, response, next) {
@@ -26,7 +20,7 @@ router.get('/pushAll', function(request, response, next) {
     icon: request.query.icon || "https://avatars0.githubusercontent.com/u/19820480?v=3&s=200" 
   }
   
-  storedPushCredentials.forEach(function(pushCredentials) {
+  storedPushCredentials.forEach(function(pushCredentials, i) {
 
     webPush.sendNotification(pushCredentials.endpoint, {
       TTL: 200,
@@ -54,7 +48,6 @@ router.post('/subscription', function(request, response, next) {
     authSecret: request.body.authSecret
   };
   
-    var id = storedPushCredentials.length + 1;
     var found = storedPushCredentials.some(function (element) {
       return element.endpoint === newPushCredentials.endpoint;
     });

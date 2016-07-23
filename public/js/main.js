@@ -22,6 +22,7 @@
 var reg;
 var sub;
 var endpoint = '';
+var deviceToken = '';
 var pubKey, authSecret;
 var supportsPayload = false;
 var isSubscribed = false;
@@ -33,6 +34,7 @@ var authSecretTitle = document.getElementById('authSecretTitle');
 var endpointText = document.getElementById('endpoint');
 var publicKeyText = document.getElementById('publicKeyText');
 var authSecretText = document.getElementById('authSecretText');
+var payloadData = document.getElementById('payloadData');
 
 // Notify all
 var notifyAllButton = document.getElementById('notify-all-button');
@@ -47,6 +49,7 @@ if ('serviceWorker' in navigator) {
     return navigator.serviceWorker.ready;
   }).then(function(serviceWorkerRegistration) {
     reg = serviceWorkerRegistration;
+    reviveSubscriptionDetails();
     subscribeButton.disabled = false;
     console.log('Service Worker is ready :^)', reg);
   }).catch(function(error) {
@@ -54,28 +57,46 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-subscribeButton.addEventListener('click', function() {
-  if (isSubscribed) {
-    unsubscribe();
+function reviveSubscriptionDetails() {
+  console.log("reviveSubscriptionDetails()");
+  reg.pushManager.getSubscription().then(function(subscription) {
+    console.log(JSON.stringify(subscription));
+    sub = subscription;
+    if (subscription) {
+      isSubscribed = true;
+      buildValuesFromSubscription();
+    }
+    updateUI();
+  });
+}
+
+function buildValuesFromSubscription() {
+  // This method assumes isSubscribed = true
+  
+  console.log('buildValuesFromSubscription()');
+  endpoint = sub.endpoint;
+  
+  if (sub && sub.getKey) {
+    supportsPayload = true
+    let rawPubKey = sub.getKey('p256dh');
+    let rawAuthSecret = sub.getKey('auth');
+    
+    // Set pubKey and authSecret
+    pubKey = rawPubKey ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawPubKey))) : null;
+    authSecret = rawAuthSecret ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawAuthSecret))) : null;
   } else {
-    subscribe();
+    console.log("Browser does not support payload encrypted push notifications");
   }
-});
+}
 
 function subscribe() {
+  console.log("subscribe()");
   reg.pushManager.subscribe({userVisibleOnly: true}).then(function(subscription) {
     sub = subscription;
-    endpoint = subscription.endpoint;
     
-    if (subscription && subscription.getKey) {
-      console.log("Supports payload yay");
-      supportsPayload = true;
-      let rawPubKey = sub.getKey('p256dh');
-      let rawAuthSecret = sub.getKey('auth');
-      pubKey = rawPubKey ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawPubKey))) : null;
-      authSecret = rawAuthSecret ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawAuthSecret))) : null;
-    } else {
-      console.log("Browser does not support push notifications with payloads");
+    if (subscription) {
+      isSubscribed = true;
+      buildValuesFromSubscription();
     }
     
     console.log('Subscribed! Endpoint:', endpoint);
@@ -92,7 +113,6 @@ function subscribe() {
     
     // Update UI
     updateUI();
-    isSubscribed = true;
   });
 }
 
@@ -110,17 +130,32 @@ function notifyAll() {
 }
 
 function updateUI() {
-  endpointText.innerText = endpoint;
+  console.log("updateUI()");
+  if (isSubscribed) {
+    endpointText.innerText = sub.endpoint;
+    subscribeButton.textContent = 'Unsubscribe';
   
-  if (supportsPayload) {
+  } else {
+    endpointText.innerText = '';    
+    subscribeButton.textContent = 'Subscribe';
+  }
+  
+  if (isSubscribed && supportsPayload) {
+    payloadData.classList.remove('no-payload');
+    publicKeyTitle.classList.remove('no-payload');
+    authSecretTitle.classList.remove('no-payload');
+    
     publicKeyText.innerText = pubKey;
     authSecretText.innerText = authSecret;
   } else {
+    payloadData.classList.add('no-payload');
     publicKeyTitle.classList.add('no-payload');
     authSecretTitle.classList.add('no-payload');
+    
+    publicKeyText.innerText = '';
+    authSecretText.innerText = '';
   }
   
-  subscribeButton.textContent = 'Unsubscribe';
 }
 
 function initiatePushNotificationWithPayload() {
@@ -169,15 +204,23 @@ function initiatePushNotificationWithoutPayload() {
   }).catch(function(error) {
     console.log(error);
   });
-  
-  console.log("Not ready yet");
 }
+
+subscribeButton.addEventListener('click', function() {
+  if (isSubscribed) {
+    unsubscribe();
+  } else {
+    subscribe();
+  }
+});
 
 function unsubscribe() {
   sub.unsubscribe().then(function(event) {
     subscribeButton.textContent = 'Subscribe';
     console.log('Unsubscribed!', event);
     isSubscribed = false;
+    // Update UI
+    updateUI();
   }).catch(function(error) {
     console.log('Error unsubscribing', error);
     subscribeButton.textContent = 'Subscribe';
