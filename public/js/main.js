@@ -99,7 +99,7 @@ function subscribe() {
 
 
 function notifyAll() {
-  let url = new URL("http://localhost:3000/pushAll"), params = {text: notifyAllMessage.value, icon: notifyAllIcon.value}
+  let url = new URL(window.location.href+'pushAll'), params = {text: notifyAllMessage.value, icon: notifyAllIcon.value}
 
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
   fetch(url).then(function() {
