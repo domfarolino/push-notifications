@@ -21,9 +21,16 @@
 
 var reg;
 var sub;
+var endpoint = '';
+var pubKey, authSecret;
+var supportsPayload = false;
 var isSubscribed = false;
+
+// Elements
 var subscribeButton = document.querySelector('button');
 var endpointLink = document.getElementById('endpoint');
+var publicKeyTitle = document.getElementById('publicKeyTitle');
+var authSecretTitle = document.getElementById('authSecretTitle');
 var publicKeyText = document.getElementById('publicKeyText');
 var authSecretText = document.getElementById('authSecretText');
 
@@ -49,52 +56,101 @@ subscribeButton.addEventListener('click', function() {
 });
 
 function subscribe() {
-  reg.pushManager.subscribe({userVisibleOnly: true}).
-  then(function(subscription) {
-    var endpoint = subscription.endpoint;
-    var pubKey, authSecret;
-    var rawPubKey = subscription.getKey('p256dh');
-    var rawAuthSecret = subscription.getKey('auth');
-
-    pubKey = rawPubKey ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawPubKey))) : '';
-    authSecret = rawAuthSecret ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawAuthSecret))) : '';
-    
+  reg.pushManager.subscribe({userVisibleOnly: true}).then(function(subscription) {
     sub = subscription;
+    endpoint = subscription.endpoint;
     
-    console.log('Subscribed! Endpoint:', subscription.endpoint);
-    console.log('Public key: ', pubKey);
-    console.log('Private key: ', authSecret);
+    if (subscription && subscription.getKey) {
+      console.log("Supports payload yay");
+      supportsPayload = true;
+      let rawPubKey = sub.getKey('p256dh');
+      let rawAuthSecret = sub.getKey('auth');
+      pubKey = rawPubKey ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawPubKey))) : null;
+      authSecret = rawAuthSecret ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawAuthSecret))) : null;
+    } else {
+      console.log("Browser does not support push notifications with payloads");
+    }
+    
+    console.log('Subscribed! Endpoint:', endpoint);
+    if (supportsPayload) {
+      console.log('Public key: ', pubKey);
+      console.log('Private key: ', authSecret);
+    }
 
-    var fetchOptions = {
-      method: 'POST',
-      headers: new Headers({
-        'Content-Type': 'application/json'
-	    }),
-      body: JSON.stringify({
-        endpoint: endpoint,
-        pubKey: pubKey,
-        authSecret: authSecret
-      })
-    };
-    
-    fetch('/subscription', fetchOptions)
-    .then(function(response) {
-      if (response.status >= 400 && response.status < 500) {
-        console.log('Failed web push response: ', response, response.status);
-        throw new Error('Failed to send push message via web push protocol');
-      }
-    })
-    .catch(err => {
-      console.log('Ooops Unable to Send a Push');
-    });
+    if (supportsPayload) {
+      initiatePushNotificationWithPayload();
+    } else {
+      initiatePushNotificationWithoutPayload();
+    }
     
     // Update UI
-    endpointLink.innerText = subscription.endpoint;
-    publicKeyText.innerText = pubKey;
-    authSecretText.innerText = authSecret;
-    subscribeButton.textContent = 'Unsubscribe';
+    updateUI();
     isSubscribed = true;
   });
+}
+
+function updateUI() {
+  endpointLink.innerText = endpoint;
+  
+  if (supportsPayload) {
+    publicKeyText.innerText = pubKey;
+    authSecretText.innerText = authSecret;
+  } else {
+    publicKeyTitle.classList.add('no-payload');
+    authSecretTitle.classList.add('no-payload');
+  }
+  
+  subscribeButton.textContent = 'Unsubscribe';
+}
+
+function initiatePushNotificationWithPayload() {
+  let fetchOptions = {
+    method: 'POST',
+    headers: new Headers({
+      'Content-Type': 'application/json'
+    }),
+    body: JSON.stringify({
+      endpoint: endpoint,
+      pubKey: pubKey,
+      authSecret: authSecret
+    })
+  };
+    
+  fetch('/subscription', fetchOptions).then(function(response) {
+    if (response.status >= 400 && response.status < 500) {
+      console.log('Failed web push response: ', response, response.status);
+      throw new Error('Failed to send push message via web push protocol');
+    }
+  }).catch(err => {
+    console.log('Ooops Unable to Send a Push');
+  });
+}
+
+function initiatePushNotificationWithoutPayload() {
+  let fetchBody = {
+    "headers":{
+        "Authorization":"key=AIzaSyC_i2HqF5w5_-ArGKSsrJRIDPUCT10bDIQ","Content-Type":"application/json"
+    },
+    "body": JSON.stringify({to: endpoint.replace('https://android.googleapis.com/gcm/send/', '')}),
+    "endpoint": 'https://android.googleapis.com/gcm/send', 
+  };
+  
+  let fetchOptions = {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: new Headers({
+      'Content-Type': 'text/html',
+    }),
+    body: JSON.stringify(fetchBody)
+  };
+  
+  fetch('https://simple-push-demo.appspot.com/api/v2/sendpush', fetchOptions).then(function() {
+    console.log("SUCCESS");
+  }).catch(function(error) {
+    console.log(error);
+  });
+  
+  console.log("Not ready yet");
 }
 
 function unsubscribe() {

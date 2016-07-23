@@ -12,3 +12,7 @@ a {
   margin:0 auto;
   word-wrap: break-word;
 }
+
+.no-payload {
+  display:none;
+}
