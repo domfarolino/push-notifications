@@ -38,7 +38,7 @@ self.addEventListener('activate', function(event) {
    
   var notificationTitle = 'Notification Title';
   var notificationText = 'You\'ve recieved a notification';
-  var notificationIcon = 'images/192.png';
+  var notificationIcon = 'images/notify.png';
 
   if (event.data) {
     var payload = event.data.json();

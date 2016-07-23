@@ -27,13 +27,21 @@
 
   <p>This page must be accessed using HTTPS or via localhost.</p>
 
-  <button disabled>Subscribe</button>
+  <button disabled id="subscribe-button">Subscribe</button>
   
   <h2>GCM Sender ID:</h2>
   <p class="data-text" id="gcm_sender_id">333252921215</p>
   
   <h2>API Key:</h2>
   <p class="data-text" id="api_key">AIzaSyC_i2HqF5w5_-ArGKSsrJRIDPUCT10bDIQ</p>
+  
+  <form id="publicKeyTitle">
+    <input id="notify-all-message" type="text" placeholder="Payload Message"> 
+    <br> 
+    <input id="notify-all-icon-url" type="text" placeholder="Notification Icon URL">
+    <br>
+    <button id="notify-all-button">Notify all</button>
+  </form>
   
   <h2>Endpoint + Device token:</h2>
   <p class="data-text" id="endpoint"></p>

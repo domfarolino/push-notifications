@@ -27,12 +27,19 @@ var supportsPayload = false;
 var isSubscribed = false;
 
 // Elements
-var subscribeButton = document.querySelector('button');
-var endpointLink = document.getElementById('endpoint');
+var subscribeButton = document.getElementById('subscribe-button');
 var publicKeyTitle = document.getElementById('publicKeyTitle');
 var authSecretTitle = document.getElementById('authSecretTitle');
+var endpointText = document.getElementById('endpoint');
 var publicKeyText = document.getElementById('publicKeyText');
 var authSecretText = document.getElementById('authSecretText');
+
+// Notify all
+var notifyAllButton = document.getElementById('notify-all-button');
+var notifyAllMessage = document.getElementById('notify-all-message');
+var notifyAllIcon = document.getElementById('notify-all-icon-url');
+
+notifyAllButton.addEventListener('click', notifyAll);
 
 if ('serviceWorker' in navigator) {
   console.log('Service Worker is supported');
@@ -89,8 +96,21 @@ function subscribe() {
   });
 }
 
+
+
+function notifyAll() {
+  let url = new URL("http://localhost:3000/pushAll"), params = {text: notifyAllMessage.value, icon: notifyAllIcon.value}
+
+  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+  fetch(url).then(function() {
+    console.log("Notifying all!");
+  }).catch(function(error) {
+    console.log(error);
+  });
+}
+
 function updateUI() {
-  endpointLink.innerText = endpoint;
+  endpointText.innerText = endpoint;
   
   if (supportsPayload) {
     publicKeyText.innerText = pubKey;
