@@ -10,14 +10,6 @@ gulp.task('browserSync', function() {
   })
 })
 
-gulp.task('testReload', function() {
-  console.log("HTML Task Run");
-  return gulp.src('src/**')
-    .pipe(browserSync.reload({
-      stream: true
-    }))
-});
-
 gulp.task('watch', ['browserSync'], function() {
-  gulp.watch('./src/**', ['testReload']);
+  gulp.watch('src/**', browserSync.reload);
 })
