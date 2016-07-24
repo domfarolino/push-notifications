@@ -13,7 +13,6 @@ gulp.task('browserSync', function() {
 gulp.task('testReload', function() {
   console.log("HTML Task Run");
   return gulp.src('src/**')
-    .pipe(console.log("Dom"))
     .pipe(browserSync.reload({
       stream: true
     }))
