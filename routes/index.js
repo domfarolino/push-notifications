@@ -6,11 +6,28 @@ var router  = express.Router();
 process.env['GCM_API_KEY'] = 'AIzaSyC_i2HqF5w5_-ArGKSsrJRIDPUCT10bDIQ';
 webPush.setGCMAPIKey(process.env.GCM_API_KEY);
 
+//////////////////
+
+const allowedOrigins = ['http://localhost:3000', 'https://domfarolino.com/push-notifications', 'https://domfarolino.github.io', 'https://domfarolino.com'];
+
+router.use(function(request, response, next) {
+  var origin = request.headers.origin;
+  if (allowedOrigins.indexOf(origin) > -1) {
+       response.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type,X-Requested-With');
+  response.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,HEAD,DELETE,OPTIONS');
+  response.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
+
+//////////////////
+
 var storedPushCredentials = [];
 
-/* GET home page. */
-router.get('/', function(request, response, next) {
-  response.sendFile(path.join(__dirname, '../', 'index.html'));
+/* TODO: REMOVE */
+router.get('/credentials', function(request, response, next) {
+  response.json(JSON.stringify(storedPushCredentials));
 });
 
 router.get('/pushAll', function(request, response, next) {
@@ -20,8 +37,8 @@ router.get('/pushAll', function(request, response, next) {
     icon: request.query.icon || "https://avatars0.githubusercontent.com/u/19820480?v=3&s=200" 
   }
   
+  console.log(storedPushCredentials);
   storedPushCredentials.forEach(function(pushCredentials, i) {
-
     webPush.sendNotification(pushCredentials.endpoint, {
       TTL: 200,
       payload: JSON.stringify(pushPayload),
@@ -47,15 +64,17 @@ router.post('/subscription', function(request, response, next) {
     pubKey: request.body.pubKey,
     authSecret: request.body.authSecret
   };
+
+  console.log(request.endpoint);
   
-    var found = storedPushCredentials.some(function (element) {
-      return element.endpoint === newPushCredentials.endpoint;
-    });
-    if (!found) {
-        storedPushCredentials.push(newPushCredentials);
-    }
+  var found = storedPushCredentials.some(function (element) {
+    return element.endpoint === newPushCredentials.endpoint;
+  });
+  if (!found) {
+    console.log("pushing");
+    storedPushCredentials.push(newPushCredentials);
+  }
   
-  console.log(storedPushCredentials);
   response.sendStatus(200);
 });
 

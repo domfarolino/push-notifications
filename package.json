@@ -28,6 +28,8 @@
     "web-push": "^2.1.1"
   },
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "browser-sync": "^2.13.0",
+    "gulp": "^3.9.1",
+    "gulp-gh-pages": "^0.5.4"
   }
 }

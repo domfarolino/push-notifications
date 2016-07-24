@@ -1,9 +1,21 @@
 var gulp = require('gulp');
 
-// gulp.task('html', function() {
-//   console.log("HTML Task Run");
-// });
+var browserSync = require('browser-sync').create();
+var ghPages = require('gulp-gh-pages');
+ 
+gulp.task('deploy', function() {
+  return gulp.src('./src/**/*')
+    .pipe(ghPages());
+});
 
-// gulp.task('watch', function() {
-//   gulp.watch('*.html', ['html']);
-// })
+gulp.task('browserSync', function() {
+  browserSync.init({
+    server: {
+      baseDir: 'src'
+    },
+  })
+})
+
+gulp.task('watch', ['browserSync'], function() {
+  gulp.watch('src/**', browserSync.reload);
+})

@@ -93,7 +93,6 @@ function subscribe() {
   console.log("subscribe()");
   reg.pushManager.subscribe({userVisibleOnly: true}).then(function(subscription) {
     sub = subscription;
-    
     if (subscription) {
       isSubscribed = true;
       buildValuesFromSubscription();
@@ -116,10 +115,8 @@ function subscribe() {
   });
 }
 
-
-
 function notifyAll() {
-  let url = new URL(window.location.href+'pushAll'), params = {text: notifyAllMessage.value, icon: notifyAllIcon.value}
+  let url = new URL('https://push-notifications-sw.herokuapp.com/pushAll'), params = {text: notifyAllMessage.value, icon: notifyAllIcon.value}
 
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
   fetch(url).then(function() {
@@ -171,7 +168,7 @@ function initiatePushNotificationWithPayload() {
     })
   };
     
-  fetch('/subscription', fetchOptions).then(function(response) {
+  fetch('https://push-notifications-sw.herokuapp.com/subscription', fetchOptions).then(function(response) {
     if (response.status >= 400 && response.status < 500) {
       console.log('Failed web push response: ', response, response.status);
       throw new Error('Failed to send push message via web push protocol');
@@ -192,7 +189,6 @@ function initiatePushNotificationWithoutPayload() {
   
   let fetchOptions = {
     method: 'POST',
-    mode: 'no-cors',
     headers: new Headers({
       'Content-Type': 'text/html',
     }),
