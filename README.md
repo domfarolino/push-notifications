@@ -7,13 +7,18 @@
 This application demonstrates the [web-push-libs/web-push](https://github.com/web-push-libs/web-push) Node.JS library to facilitate the sending of web push notifications with encrypted payloads via a Node server.
 
 # Demo
-Demo the live application [here](https://push-notifications-sw.herokuapp.com)
+Demo the live application [here](https://domfarolino.com/push-notifications)
 
 # Getting started
 
+Running the client side app:
+
 ```sh
+git clone git@github.com:domfarolino/push-notifications.git
+npm install -g gulp
 npm install
-npm start
+gulp watch
 ```
 
-Navigate to `localhost:3000`
+To run the server locally, run `npm start` and in `src/js/main.js` change any occurrences of the remote API
+(`https://push-notifications-sw.herokuapp.com`) to `http://localhost:3000` and unregister the old service worker.
