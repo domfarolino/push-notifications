@@ -17,5 +17,5 @@
   "background_color": "#2962FF", 
   "orientation": "portrait",
   "display": "standalone",
-  "start_url": "/push-notifications"
+  "start_url": "/"
 }
