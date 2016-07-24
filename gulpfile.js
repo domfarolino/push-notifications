@@ -5,15 +5,20 @@ var browserSync = require('browser-sync').create();
 gulp.task('browserSync', function() {
   browserSync.init({
     server: {
-      baseDir: 'app'
+      baseDir: 'src'
     },
   })
 })
 
-// gulp.task('html', function() {
-//   console.log("HTML Task Run");
-// });
+gulp.task('testReload', function() {
+  console.log("HTML Task Run");
+  return gulp.src('src/**')
+    .pipe(console.log("Dom"))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
+});
 
-gulp.task('watch', function() {
-  gulp.watch('app/*', ['browserSync']);
+gulp.task('watch', ['browserSync'], function() {
+  gulp.watch('./src/**', ['testReload']);
 })
