@@ -171,7 +171,7 @@ var AppController = function () {
         this.publicKeyText.innerText = this.pubKey;
         this.authSecretText.innerText = this.authSecret;
 
-        this.notifyAllButton.innerText = 'Notify all';
+        this.notifyAllButton.innerText = 'Notify all subscribers';
       } else {
         this.payloadData.classList.add('no-payload');
         this.publicKeyTitle.classList.add('no-payload');
