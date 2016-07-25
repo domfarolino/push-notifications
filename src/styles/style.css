@@ -21,3 +21,7 @@ a {
 input {
   max-width:300px;
 }
+
+input:focus {
+  border-bottom: 1px solid #2979FF !important;
+}
