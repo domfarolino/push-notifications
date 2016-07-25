@@ -190,6 +190,7 @@ function initiatePushNotificationWithoutPayload() {
 
   var fetchOptions = {
     method: 'POST',
+    mode: 'no-cors',
     headers: new Headers({
       'Content-Type': 'text/html'
     }),
