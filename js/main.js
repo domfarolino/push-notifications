@@ -19,206 +19,257 @@
 
 'use strict';
 
-var reg;
-var sub;
-var endpoint = '';
-var deviceToken = '';
-var pubKey, authSecret;
-var supportsPayload = false;
-var isSubscribed = false;
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-// Elements
-var subscribeButton = document.getElementById('subscribe-button');
-var publicKeyTitle = document.getElementById('publicKeyTitle');
-var authSecretTitle = document.getElementById('authSecretTitle');
-var endpointText = document.getElementById('endpoint');
-var publicKeyText = document.getElementById('publicKeyText');
-var authSecretText = document.getElementById('authSecretText');
-var payloadData = document.getElementById('payloadData');
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-// Notify all
-var notifyAllButton = document.getElementById('notify-all-button');
-var notifyAllMessage = document.getElementById('notify-all-message');
-var notifyAllIcon = document.getElementById('notify-all-icon-url');
+var AppController = function () {
+  function AppController() {
+    var _this = this;
 
-notifyAllButton.addEventListener('click', notifyAll);
+    _classCallCheck(this, AppController);
 
-if ('serviceWorker' in navigator) {
-  console.log('Service Worker is supported');
-  navigator.serviceWorker.register('sw.js').then(function() {
-    return navigator.serviceWorker.ready;
-  }).then(function(serviceWorkerRegistration) {
-    reg = serviceWorkerRegistration;
-    reviveSubscriptionDetails();
-    subscribeButton.disabled = false;
-    console.log('Service Worker is ready :^)', reg);
-  }).catch(function(error) {
-    console.log('Service Worker Error :^(', error);
-  });
-}
+    this.backendURL = 'https://push-notifications-sw.herokuapp.com';
 
-function reviveSubscriptionDetails() {
-  console.log("reviveSubscriptionDetails()");
-  reg.pushManager.getSubscription().then(function(subscription) {
-    console.log(JSON.stringify(subscription));
-    sub = subscription;
-    if (subscription) {
-      isSubscribed = true;
-      buildValuesFromSubscription();
-    }
-    updateUI();
-  });
-}
+    this.registration = null;
+    this.subscription = null;
 
-function buildValuesFromSubscription() {
-  // This method assumes isSubscribed = true
-  
-  console.log('buildValuesFromSubscription()');
-  endpoint = sub.endpoint;
-  
-  if (sub && sub.getKey) {
-    supportsPayload = true
-    let rawPubKey = sub.getKey('p256dh');
-    let rawAuthSecret = sub.getKey('auth');
-    
-    // Set pubKey and authSecret
-    pubKey = rawPubKey ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawPubKey))) : null;
-    authSecret = rawAuthSecret ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawAuthSecret))) : null;
-  } else {
-    console.log("Browser does not support payload encrypted push notifications");
+    this.isSubscribed = false;
+    this.supportsPayload = false;
+
+    this.endpoint = '';
+    this.deviceToken = '';
+    this.pubKey = '';
+    this.authSecret = '';
+
+    // Elements
+    this.subscribeButton = document.getElementById('subscribe-button');
+    this.publicKeyTitle = document.getElementById('publicKeyTitle');
+    this.authSecretTitle = document.getElementById('authSecretTitle');
+    this.endpointText = document.getElementById('endpoint');
+    this.publicKeyText = document.getElementById('publicKeyText');
+    this.authSecretText = document.getElementById('authSecretText');
+    this.payloadData = document.getElementById('payloadData');
+
+    // Notify all
+    this.notifyAllButton = document.getElementById('notify-all-button');
+    this.notifyAllMessage = document.getElementById('notify-all-message');
+    this.notifyAllIcon = document.getElementById('notify-all-icon-url');
+
+    this.notifyAllButton.addEventListener('click', this.notifyHandler.bind(this));
+
+    this.registerServiceWorker();
+
+    this.subscribeButton.addEventListener('click', function () {
+      if (_this.isSubscribed) _this.unsubscribe();else _this.subscribe();
+    });
   }
-}
 
-function subscribe() {
-  console.log("subscribe()");
-  reg.pushManager.subscribe({userVisibleOnly: true}).then(function(subscription) {
-    sub = subscription;
-    if (subscription) {
-      isSubscribed = true;
-      buildValuesFromSubscription();
+  _createClass(AppController, [{
+    key: 'registerServiceWorker',
+    value: function registerServiceWorker() {
+      var _this2 = this;
+
+      if ('serviceWorker' in navigator) {
+        console.log('Service Worker is supported');
+        navigator.serviceWorker.register('sw.js').then(function () {
+          return navigator.serviceWorker.ready;
+        }).then(function (serviceWorkerRegistration) {
+          // Set this.registration
+          console.log('Setting this.registration = serviceWorkerRegistration');
+          _this2.registration = serviceWorkerRegistration;
+          _this2.attemptToReviveExistingSubscription();
+          console.log('Service Worker is ready :^)', _this2.registration);
+        }).catch(function (error) {
+          console.log('Service Worker error :^(', error);
+        });
+      }
     }
-    
-    console.log('Subscribed! Endpoint:', endpoint);
-    if (supportsPayload) {
-      console.log('Public key: ', pubKey);
-      console.log('Private key: ', authSecret);
+  }, {
+    key: 'notifyHandler',
+    value: function notifyHandler() {
+      console.log('notifyAll()');
+      if (!this.supportsPayload) {
+        this.notifyJustMe();
+      } else {
+        this.notifyAll();
+      }
     }
+  }, {
+    key: 'notifyAll',
+    value: function notifyAll() {
+      var url = new URL('https://push-notifications-sw.herokuapp.com/pushAll');
+      var params = { text: this.notifyAllMessage.value, icon: this.notifyAllIcon.value };
 
-    if (supportsPayload) {
-      initiatePushNotificationWithPayload();
-    } else {
-      initiatePushNotificationWithoutPayload();
+      Object.keys(params).forEach(function (key) {
+        return url.searchParams.append(key, params[key]);
+      });
+
+      fetch(url).then(function () {
+        console.log('Notifying all that support payload!');
+      }).catch(console.log);
     }
-    
-    // Update UI
-    updateUI();
-  });
-}
+  }, {
+    key: 'attemptToReviveExistingSubscription',
+    value: function attemptToReviveExistingSubscription() {
+      var _this3 = this;
 
-function notifyAll() {
-  let url = new URL('https://push-notifications-sw.herokuapp.com/pushAll'), params = {text: notifyAllMessage.value, icon: notifyAllIcon.value}
+      console.log("reviveSubscriptionDetails()");
 
-  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-  fetch(url).then(function() {
-    console.log("Notifying all!");
-  }).catch(function(error) {
-    console.log(error);
-  });
-}
-
-function updateUI() {
-  console.log("updateUI()");
-  if (isSubscribed) {
-    endpointText.innerText = sub.endpoint;
-    subscribeButton.textContent = 'Unsubscribe';
-  
-  } else {
-    endpointText.innerText = '';    
-    subscribeButton.textContent = 'Subscribe';
-  }
-  
-  if (isSubscribed && supportsPayload) {
-    payloadData.classList.remove('no-payload');
-    publicKeyTitle.classList.remove('no-payload');
-    authSecretTitle.classList.remove('no-payload');
-    
-    publicKeyText.innerText = pubKey;
-    authSecretText.innerText = authSecret;
-  } else {
-    payloadData.classList.add('no-payload');
-    publicKeyTitle.classList.add('no-payload');
-    authSecretTitle.classList.add('no-payload');
-    
-    publicKeyText.innerText = '';
-    authSecretText.innerText = '';
-  }
-  
-}
-
-function initiatePushNotificationWithPayload() {
-  let fetchOptions = {
-    method: 'POST',
-    headers: new Headers({
-      'Content-Type': 'application/json'
-    }),
-    body: JSON.stringify({
-      endpoint: endpoint,
-      pubKey: pubKey,
-      authSecret: authSecret
-    })
-  };
-    
-  fetch('https://push-notifications-sw.herokuapp.com/subscription', fetchOptions).then(function(response) {
-    if (response.status >= 400 && response.status < 500) {
-      console.log('Failed web push response: ', response, response.status);
-      throw new Error('Failed to send push message via web push protocol');
+      this.registration.pushManager.getSubscription().then(function (serviceWorkerSubscription) {
+        _this3.subscription = serviceWorkerSubscription;
+        if (_this3.subscription) {
+          _this3.isSubscribed = true;
+          _this3.buildValuesFromSubscription();
+        }
+        _this3.updateUI();
+      });
     }
-  }).catch(err => {
-    console.log('Ooops Unable to Send a Push');
-  });
-}
+  }, {
+    key: 'buildValuesFromSubscription',
+    value: function buildValuesFromSubscription() {
+      console.log('buildValuesFromSubscription()');
 
-function initiatePushNotificationWithoutPayload() {
-  let fetchBody = {
-    "headers":{
-        "Authorization":"key=AIzaSyC_i2HqF5w5_-ArGKSsrJRIDPUCT10bDIQ","Content-Type":"application/json"
-    },
-    "body": JSON.stringify({to: endpoint.replace('https://android.googleapis.com/gcm/send/', '')}),
-    "endpoint": 'https://android.googleapis.com/gcm/send', 
-  };
-  
-  let fetchOptions = {
-    method: 'POST',
-    headers: new Headers({
-      'Content-Type': 'text/html',
-    }),
-    body: JSON.stringify(fetchBody)
-  };
-  
-  fetch('https://simple-push-demo.appspot.com/api/v2/sendpush', fetchOptions).then(function() {
-    console.log("SUCCESS");
-  }).catch(function(error) {
-    console.log(error);
-  });
-}
+      if (this.subscription) {
+        this.endpoint = this.subscription.endpoint;
 
-subscribeButton.addEventListener('click', function() {
-  if (isSubscribed) {
-    unsubscribe();
-  } else {
-    subscribe();
-  }
-});
+        if (this.subscription.getKey) {
+          this.supportsPayload = true;
 
-function unsubscribe() {
-  sub.unsubscribe().then(function(event) {
-    subscribeButton.textContent = 'Subscribe';
-    console.log('Unsubscribed!', event);
-    isSubscribed = false;
-    // Update UI
-    updateUI();
-  }).catch(function(error) {
-    console.log('Error unsubscribing', error);
-    subscribeButton.textContent = 'Subscribe';
-  });
-}
+          var rawPubKey = this.subscription.getKey('p256dh');
+          var rawAuthSecret = this.subscription.getKey('auth');
+
+          this.pubKey = rawPubKey ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawPubKey))) : null;
+          this.authSecret = rawAuthSecret ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawAuthSecret))) : null;
+        } else {
+          console.log('A true American shame...your browser does not support payload encrypted push notifications');
+        }
+      }
+    }
+  }, {
+    key: 'updateUI',
+    value: function updateUI() {
+      console.log("updateUI()");
+      if (this.registration) this.subscribeButton.disabled = false;
+
+      if (this.isSubscribed) {
+        this.endpointText.innerText = this.endpoint;
+        this.subscribeButton.textContent = 'Unsubscribe';
+        this.notifyAllButton.classList.remove('no-subscription');
+      } else {
+        console.log('Not subscribed');
+        this.notifyAllButton.classList.add('no-subscription');
+        this.endpointText.innerText = '';
+        this.subscribeButton.textContent = 'Subscribe';
+      }
+
+      if (this.isSubscribed && this.supportsPayload) {
+        this.payloadData.classList.remove('no-payload');
+        this.publicKeyTitle.classList.remove('no-payload');
+        this.authSecretTitle.classList.remove('no-payload');
+
+        this.publicKeyText.innerText = this.pubKey;
+        this.authSecretText.innerText = this.authSecret;
+
+        this.notifyAllButton.innerText = 'Notify all';
+      } else {
+        this.payloadData.classList.add('no-payload');
+        this.publicKeyTitle.classList.add('no-payload');
+        this.authSecretTitle.classList.add('no-payload');
+
+        this.publicKeyText.innerText = '';
+        this.authSecretText.innerText = '';
+
+        this.notifyAllButton.innerText = 'Notify me';
+      }
+    }
+  }, {
+    key: 'subscribe',
+    value: function subscribe() {
+      var _this4 = this;
+
+      console.log("subscribe()");
+
+      this.registration.pushManager.subscribe({ userVisibleOnly: true }).then(function (serviceWorkerSubscription) {
+        _this4.subscription = serviceWorkerSubscription;
+        if (_this4.subscription) {
+          _this4.isSubscribed = true;
+          _this4.buildValuesFromSubscription();
+        }
+
+        console.log('Subscribed! Endpoint:', _this4.endpoint);
+
+        if (_this4.supportsPayload) {
+          console.log('Public key: ', _this4.pubKey);
+          console.log('Private key: ', _this4.authSecret);
+          _this4.sendEncryptionInformationToServer();
+        }
+
+        // Update UI
+        _this4.updateUI();
+      });
+    }
+  }, {
+    key: 'sendEncryptionInformationToServer',
+    value: function sendEncryptionInformationToServer() {
+      console.log("sendEncryptionInformationToServer()");
+      var fetchOptions = {
+        method: 'POST',
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({
+          endpoint: this.endpoint,
+          pubKey: this.pubKey,
+          authSecret: this.authSecret
+        })
+      };
+
+      fetch(this.backendURL + '/subscription', fetchOptions).then(function (response) {
+        if (response.status >= 400 && response.status < 500) {
+          console.log('Failed web push response: ', response, response.status);
+          throw new Error('Failed to send push message via web push protocol');
+        }
+      }).catch(console.log);
+    }
+  }, {
+    key: 'notifyJustMe',
+    value: function notifyJustMe() {
+      console.log("notifyJustMe()");
+      var fetchBody = {
+        "headers": {
+          "Authorization": "key=AIzaSyC_i2HqF5w5_-ArGKSsrJRIDPUCT10bDIQ", "Content-Type": "application/json"
+        },
+        "body": JSON.stringify({ to: this.endpoint.replace('https://android.googleapis.com/gcm/send/', '') }),
+        "endpoint": 'https://android.googleapis.com/gcm/send'
+      };
+
+      var fetchOptions = {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: new Headers({
+          'Content-Type': 'text/html'
+        }),
+        body: JSON.stringify(fetchBody)
+      };
+
+      fetch('https://simple-push-demo.appspot.com/api/v2/sendpush', fetchOptions).then(function () {
+        console.log("SUCCESS");
+      }).catch(console.log);
+    }
+  }, {
+    key: 'unsubscribe',
+    value: function unsubscribe() {
+      var _this5 = this;
+
+      this.subscription.unsubscribe().then(function (event) {
+        console.log('Unsubscribed!', event);
+        _this5.isSubscribed = false;
+        _this5.supportsPayload = false;
+        _this5.updateUI();
+      }).catch(console.log);
+    }
+  }]);
+
+  return AppController;
+}();
