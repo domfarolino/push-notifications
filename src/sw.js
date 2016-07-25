@@ -36,7 +36,7 @@ self.addEventListener('activate', function(event) {
    console.log('Push message', event);
    console.log(event.data);
    
-  var notificationTitle = 'Notification Title';
+  var notificationTitle = 'Dom\'s Push Notifications';
   var notificationText = 'You\'ve recieved a notification';
   var notificationIcon = 'images/notify.png';
 
