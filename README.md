@@ -4,7 +4,7 @@
 [![Dependency Status](https://david-dm.org/domfarolino/push-notifications.svg)](https://david-dm.org/domfarolino/push-notifications)
 [![devDependency Status](https://david-dm.org/domfarolino/push-notifications/dev-status.svg)](https://david-dm.org/domfarolino/push-notifications#info=devDependencies)
 
-This application demonstrates the [web-push-libs/web-push](https://github.com/web-push-libs/web-push) Node.JS library to facilitate the sending of web push notifications with encrypted payloads via a Node server.
+This application demonstrates the [web-push-libs/web-push](https://github.com/web-push-libs/web-push) Node.JS library which facilitates sending web push notifications with encrypted payloads via Nodejs server.
 
 # Demo
 Demo the live application [here](https://domfarolino.com/push-notifications)
@@ -17,8 +17,10 @@ Running the client side app:
 git clone git@github.com:domfarolino/push-notifications.git
 npm install -g gulp
 npm install
-gulp watch
+gulp
 ```
 
-To run the server locally, run `npm start` and in `src/js/main.js` change any occurrences of the remote API
-(`https://push-notifications-sw.herokuapp.com`) to `http://localhost:3000` and unregister the old service worker.
+To run the server locally:
+
+ - Run `npm start`
+ - In `src/js/main.js` change any occurrences of the remote API (`https://push-notifications-sw.herokuapp.com`) to `http://localhost:5000` and unregister the old service worker.
