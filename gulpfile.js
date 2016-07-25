@@ -33,4 +33,7 @@ gulp.task('browserSync', function() {
 gulp.task('watch', ['browserSync', 'build', 'babel'], function() {
   gulp.watch('dist/**', browserSync.reload);
   gulp.watch([es6Path], ['babel']);
+  gulp.watch('src/**', ['build']);
 });
+
+gulp.task('default', ['watch']);

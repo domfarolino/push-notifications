@@ -10,6 +10,8 @@
     <link rel="icon" sizes="192x192" href="images/icon.png">
     <link href="https://fonts.googleapis.com/icon?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
     <meta name="theme-color" content="#3F51B5">
     
     <!-- Add to homescreen for Safari on iOS -->
@@ -30,32 +32,37 @@
 
   <p>This page must be accessed using HTTPS or via localhost.</p>
 
-  <button disabled id="subscribe-button">Subscribe</button>
+  <button class="waves-effect waves-light btn blue accent-3" disabled id="subscribe-button">Subscribe</button>
   
-  <h2>GCM Sender ID:</h2>
-  <p class="data-text" id="gcm_sender_id">333252921215</p>
-  
-  <h2>API Key:</h2>
-  <p class="data-text" id="api_key">AIzaSyC_i2HqF5w5_-ArGKSsrJRIDPUCT10bDIQ</p>
+  <div style="margin-top:20px;"></div>
   
   <div id="payloadData">
     <input id="notify-all-message" type="text" placeholder="Payload Message"> 
     <br> 
     <input id="notify-all-icon-url" type="text" placeholder="Notification Icon URL">
     <br>
-    <button id="notify-all-button">Notify all</button>
   </div>
+  <button class="waves-effect waves-light btn blue accent-3 no-subscription" id="notify-all-button">Notify all</button>
   
-  <h2>Endpoint + Device token:</h2>
+  <h4>GCM Sender ID:</h4>
+  <p class="data-text" id="gcm_sender_id">333252921215</p>
+  
+  <h4>API Key:</h4>
+  <p class="data-text" id="api_key">AIzaSyC_i2HqF5w5_-ArGKSsrJRIDPUCT10bDIQ</p>
+  
+  <h4>Endpoint + Device token:</h4>
   <p class="data-text" id="endpoint"></p>
   
-  <h2 id="publicKeyTitle">Public Key:</h2>
+  <h4 id="publicKeyTitle">Public Key:</h4>
   <p class="data-text" id="publicKeyText"></p>
 
-  <h2 id="authSecretTitle">Auth Secret:</h2>
+  <h4 id="authSecretTitle">Auth Secret:</h4>
   <p class="data-text" id="authSecretText"></p>
 
   <script src="js/main.js"></script>
+  <script>
+    var appController = new AppController();
+  </script>
 
 </body>
 </html>

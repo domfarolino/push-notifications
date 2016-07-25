@@ -1,5 +1,4 @@
 body {
-  font-family: "Roboto", Helvetica, Arial, sans-serif;
   text-align: center;
 }
 
@@ -13,6 +12,12 @@ a {
   word-wrap: break-word;
 }
 
-.no-payload {
+.no-subscription, .no-payload {
   display:none;
+  transition: opacity .25s ease-in-out;
+  opacity:0;
+}
+
+input {
+  max-width:300px;
 }
