@@ -33,8 +33,8 @@ router.get('/credentials', function(request, response, next) {
 router.get('/pushAll', function(request, response, next) {
   
   var pushPayload = {
-    text: request.query.text || "Static server payload for now",
-    icon: request.query.icon || "https://avatars0.githubusercontent.com/u/19820480?v=3&s=200" 
+    text: request.query.text || "Static server notification payload...",
+    icon: request.query.icon || "https://unsplash.it/200?random"
   }
   
   console.log(storedPushCredentials);
