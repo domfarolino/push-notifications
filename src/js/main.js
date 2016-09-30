@@ -21,7 +21,7 @@
 
 class AppController {
   constructor() {
-    this.backendURL = 'https://push-notifications-sw.herokuapp.com';
+    this.backendURL = 'http://localhost:5000';
     
     this.registration = null;
     this.subscription = null;
@@ -88,7 +88,7 @@ class AppController {
   }
   
   notifyAll() {
-    let url = new URL('https://push-notifications-sw.herokuapp.com/pushAll');
+    let url = new URL(`${this.backendURL}/pushAll`);
     let params = {text: this.notifyAllMessage.value, icon: this.notifyAllIcon.value};
 
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
@@ -203,8 +203,8 @@ class AppController {
       }),
       body: JSON.stringify({
         endpoint: this.endpoint,
-        pubKey: this.pubKey,
-        authSecret: this.authSecret
+        p256dh: this.pubKey,
+        auth: this.authSecret
       })
     };
       

@@ -25,7 +25,7 @@
     "express": "^4.14.0",
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.0",
-    "web-push": "^2.1.1"
+    "web-push": "^3.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.11.4",

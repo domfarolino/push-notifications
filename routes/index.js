@@ -27,24 +27,21 @@ var storedPushCredentials = [];
 
 /* TODO: REMOVE */
 router.get('/credentials', function(request, response, next) {
-  response.json(JSON.stringify(storedPushCredentials));
+  response.json(storedPushCredentials);
 });
 
 router.get('/pushAll', function(request, response, next) {
   
-  var pushPayload = {
+  const pushPayload = {
     text: request.query.text || "Static server notification payload...",
     icon: request.query.icon || "https://unsplash.it/200?random"
   }
   
   console.log(storedPushCredentials);
   storedPushCredentials.forEach(function(pushCredentials, i) {
-    webPush.sendNotification(pushCredentials.endpoint, {
-      TTL: 200,
-      payload: JSON.stringify(pushPayload),
-      userPublicKey: pushCredentials.pubKey,
-      userAuth: pushCredentials.authSecret,
-    }).then(function() {
+    
+    webPush.sendNotification(pushCredentials, JSON.stringify(pushPayload))
+    .then(function() {
       console.log("Push notification sent successfully");
     }).catch(function(error) {
       console.log(error);
@@ -59,19 +56,20 @@ router.get('/pushAll', function(request, response, next) {
 /* POST subscription data */
 router.post('/subscription', function(request, response, next) {
   
-  var newPushCredentials = {
+  const newPushCredentials = {
     endpoint: request.body.endpoint,
-    pubKey: request.body.pubKey,
-    authSecret: request.body.authSecret
+    keys: {
+      p256dh: request.body.p256dh,
+      auth: request.body.auth
+    }
   };
-
-  console.log(request.endpoint);
   
-  var found = storedPushCredentials.some(function (element) {
+   const found = storedPushCredentials.some(function (element) {
     return element.endpoint === newPushCredentials.endpoint;
   });
+  
   if (!found) {
-    console.log("pushing");
+    console.log("Pushing");
     storedPushCredentials.push(newPushCredentials);
   }
   
