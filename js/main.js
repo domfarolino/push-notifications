@@ -128,7 +128,7 @@ var AppController = function () {
   }, {
     key: 'buildValuesFromSubscription',
     value: function buildValuesFromSubscription() {
-      console.log('buildValuesFromSubscription()');
+      console.log('buildValuesFromSubscription() t');
 
       if (this.subscription) {
         this.endpoint = this.subscription.endpoint;
