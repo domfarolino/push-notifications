@@ -30,6 +30,11 @@ router.get('/credentials', function(request, response, next) {
   response.json(storedPushCredentials);
 });
 
+router.get('/clearCredentials', function(request, response, next) {
+  storedPushCredentials = [];
+  response.json(storedPushCredentials);
+});
+
 router.get('/pushAll', function(request, response, next) {
   
   const pushPayload = {
