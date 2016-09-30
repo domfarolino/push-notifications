@@ -98,7 +98,7 @@ var AppController = function () {
   }, {
     key: 'notifyAll',
     value: function notifyAll() {
-      var url = new URL('https://push-notifications-sw.herokuapp.com/pushAll');
+      var url = new URL(this.backendURL + '/pushAll');
       var params = { text: this.notifyAllMessage.value, icon: this.notifyAllIcon.value };
 
       Object.keys(params).forEach(function (key) {
@@ -220,8 +220,8 @@ var AppController = function () {
         }),
         body: JSON.stringify({
           endpoint: this.endpoint,
-          pubKey: this.pubKey,
-          authSecret: this.authSecret
+          p256dh: this.pubKey,
+          auth: this.authSecret
         })
       };
 

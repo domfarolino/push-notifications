@@ -36,17 +36,24 @@ self.addEventListener('activate', function(event) {
    console.log('Push message', event);
    console.log(event.data);
    
-  var notificationTitle = 'Dom\'s Push Notifications';
-  var notificationText = 'You\'ve recieved a notification';
-  var notificationIcon = 'images/notify.png';
+  let notificationTitle = 'Dom\'s Push Notifications';
+  let notificationText = 'You\'ve recieved a notification';
+  let notificationIcon = 'images/notify.png';
 
   if (event.data) {
-    var payload = event.data.json();
-    notificationText = payload.text;
-    notificationIcon = payload.icon;
+    
+    try {
+      let payload = event.data.json();
+      notificationText = payload.text;
+      notificationIcon = payload.icon;
+    } catch (error) {
+      notificationText = event.data.text();
+      notificationIcon = 'https://unsplash.it/200/200?random';
+    }
+
   }
 
-  var notificationOptions = {
+  const notificationOptions = {
     body: notificationText,
     icon: notificationIcon,
     tag: 'notify-sw',
@@ -65,7 +72,7 @@ self.addEventListener('notificationclick', function(event) {
   // Android doesn't close the notification when you click it
   // See http://crbug.com/463146
   event.notification.close();
-  var url = 'https://domfarolino.com';
+  let url = 'https://domfarolino.com';
   // Check if there's already a tab open with this URL.
   // If yes: focus on the tab.
   // If no: open a tab with the URL.
@@ -75,8 +82,8 @@ self.addEventListener('notificationclick', function(event) {
     })
     .then(function(windowClients) {
       console.log('WindowClients', windowClients);
-      for (var i = 0; i < windowClients.length; i++) {
-        var client = windowClients[i];
+      for (let i = 0; i < windowClients.length; i++) {
+        let client = windowClients[i];
         console.log('WindowClient', client);
         if (client.url === url && 'focus' in client) {
           return client.focus();
