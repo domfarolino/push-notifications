@@ -21,7 +21,7 @@
 
 class AppController {
   constructor() {
-    this.backendURL = 'http://localhost:5000';
+    this.backendURL = 'https://push-notifications-sw.herokuapp.com';
     
     this.registration = null;
     this.subscription = null;
