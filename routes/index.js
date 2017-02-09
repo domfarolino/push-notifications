@@ -1,10 +1,10 @@
-var express = require('express');
-var path    = require('path');
-var webPush = require('web-push');
-var router  = express.Router();
+const express = require('express');
+const path    = require('path');
+const webPush = require('web-push');
+const router  = express.Router();
 
-process.env['GCM_API_KEY'] = 'AIzaSyC_i2HqF5w5_-ArGKSsrJRIDPUCT10bDIQ';
-webPush.setGCMAPIKey(process.env.GCM_API_KEY);
+const firebaseAPIKey = process.env.FIREBASE_API_KEY;
+webPush.setGCMAPIKey(firebaseAPIKey);
 
 //////////////////
 
@@ -36,31 +36,31 @@ router.get('/clearCredentials', function(request, response, next) {
 });
 
 router.get('/pushAll', function(request, response, next) {
-  
+
   const pushPayload = {
     text: request.query.text || "Static server notification payload...",
     icon: request.query.icon || "https://unsplash.it/200?random"
   }
-  
+
   console.log(storedPushCredentials);
   storedPushCredentials.forEach(function(pushCredentials, i) {
-    
+
     webPush.sendNotification(pushCredentials, JSON.stringify(pushPayload))
     .then(function() {
       console.log("Push notification sent successfully");
-    }).catch(function(error) {
+    })
+    .catch(function(error) {
       console.log(error);
     });
-  
+
   }); //end forEach
-  
+
   response.sendStatus(201);
-  
 });
 
 /* POST subscription data */
 router.post('/subscription', function(request, response, next) {
-  
+
   const newPushCredentials = {
     endpoint: request.body.endpoint,
     keys: {
@@ -68,16 +68,16 @@ router.post('/subscription', function(request, response, next) {
       auth: request.body.auth
     }
   };
-  
-   const found = storedPushCredentials.some(function (element) {
+
+  const found = storedPushCredentials.some(function (element) {
     return element.endpoint === newPushCredentials.endpoint;
   });
-  
+
   if (!found) {
-    console.log("Pushing");
+    console.log("Pushing credentials to array");
     storedPushCredentials.push(newPushCredentials);
   }
-  
+
   response.sendStatus(200);
 });
 
