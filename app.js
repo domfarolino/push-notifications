@@ -1,6 +1,6 @@
 'use strict';
 
-require('dotenv').config({silent: true});
+require('dotenv').config();
 
 const path = require('path');
 const logger = require('morgan');
