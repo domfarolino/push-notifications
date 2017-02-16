@@ -1,4 +1,4 @@
-var gulp = require('gulp'),
+const gulp = require('gulp'),
     plumber = require('gulp-plumber'),
     compilePath = 'dist/js',
     browserSync = require('browser-sync').create(),
