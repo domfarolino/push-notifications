@@ -1,27 +1,9 @@
-/*
-*
-*  Push Notifications codelab
-*  Copyright 2015 Google Inc. All rights reserved.
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      https://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License
-*
-*/
-
 'use strict';
 
 class AppController {
   constructor() {
     this.backendURL = 'https://push-notifications-sw.herokuapp.com';
+    this.backendURL = 'http://localhost:8080';
     
     this.registration = null;
     this.subscription = null;
@@ -56,7 +38,6 @@ class AppController {
       if (this.isSubscribed) this.unsubscribe();
       else this.subscribe();
     });
-    
   }
   
   registerServiceWorker() {
@@ -64,17 +45,18 @@ class AppController {
       console.log('Service Worker is supported');
       navigator.serviceWorker.register('sw.js').then(() => {
         return navigator.serviceWorker.ready;
-      }).then(serviceWorkerRegistration => {
+      })
+      .then(serviceWorkerRegistration => {
         // Set this.registration
         console.log('Setting this.registration = serviceWorkerRegistration');
         this.registration = serviceWorkerRegistration;
         this.attemptToReviveExistingSubscription();
         console.log('Service Worker is ready :^)', this.registration);
-      }).catch(error => {
+      })
+      .catch(error => {
         console.log('Service Worker error :^(', error);
       });
     }
-    
   }
   
   notifyHandler() {
@@ -84,7 +66,6 @@ class AppController {
     } else {
       this.notifyAll();
     }
-    
   }
   
   notifyAll() {
@@ -93,9 +74,11 @@ class AppController {
 
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
   
-    fetch(url).then(() => {
-      console.log('Notifying all that support payload!');
-    }).catch(console.log);
+    fetch(url)
+      .then(() => {
+        console.log('Notifying all that support payload!');
+      })
+      .catch(console.log);
   }
   
   attemptToReviveExistingSubscription() {
@@ -129,7 +112,6 @@ class AppController {
         console.log('A true American shame...your browser does not support payload encrypted push notifications');
       }
     }
-
   }
 
   updateUI() {
@@ -166,7 +148,6 @@ class AppController {
       
       this.notifyAllButton.innerText = 'Notify me';
     }
-  
   }
   
   subscribe() {
@@ -190,7 +171,6 @@ class AppController {
       // Update UI
       this.updateUI();
     });
-
   }
 
 
@@ -213,8 +193,8 @@ class AppController {
         console.log('Failed web push response: ', response, response.status);
         throw new Error('Failed to send push message via web push protocol');
       }
-    }).catch(console.log);
-  
+    })
+    .catch(console.error);
   }
 
 
@@ -240,7 +220,6 @@ class AppController {
     fetch('https://simple-push-demo.appspot.com/api/v2/sendpush', fetchOptions).then(() => {
       console.log("SUCCESS");
     }).catch(console.log);
-
   }
   
   unsubscribe() {
@@ -251,6 +230,6 @@ class AppController {
       this.updateUI();
     }).catch(console.log);
   }
-
-
 }
+
+const appController = new AppController();
