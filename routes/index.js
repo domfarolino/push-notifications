@@ -11,7 +11,7 @@ webPush.setGCMAPIKey(firebaseAPIKey);
 const allowedOrigins = ['http://localhost:3000', 'https://domfarolino.com/push-notifications', 'https://domfarolino.github.io', 'https://domfarolino.com'];
 
 router.use(function(request, response, next) {
-  var origin = request.headers.origin;
+  const origin = request.headers.origin;
   if (allowedOrigins.indexOf(origin) > -1) {
        response.setHeader('Access-Control-Allow-Origin', origin);
   }
@@ -23,9 +23,9 @@ router.use(function(request, response, next) {
 
 //////////////////
 
-var storedPushCredentials = [];
+let storedPushCredentials = [];
 
-/* TODO: REMOVE */
+/* TODO: REMOVE (someday?) */
 router.get('/credentials', function(request, response, next) {
   response.json(storedPushCredentials);
 });
