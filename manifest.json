@@ -1,21 +1,18 @@
 {
   "name": "Push Notifications",
   "short_name": "Notify",
+  "start_url": "/push-notifications",
+  "display": "standalone",
+  "background_color": "#2962FF",
+  "theme_color": "#2962FF",
   "gcm_sender_id": "333252921215",
   "gcm_user_visible_only": true,
-  "icons": [
-    {
-      "src": "images/144.png",
-      "sizes": "144x144"
-    },
-    {
-      "src": "images/96.png",
-      "sizes": "96x96"
-    }
-  ],
-  "theme_color": "#2962FF",
-  "background_color": "#2962FF", 
-  "orientation": "portrait",
-  "display": "standalone",
-  "start_url": "/push-notifications"
+  "icons": [{
+    "src": "images/144.png",
+    "sizes": "144x144"
+  },
+  {
+    "src": "images/96.png",
+    "sizes": "96x96"
+  }]
 }

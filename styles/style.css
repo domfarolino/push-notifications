@@ -1,4 +1,5 @@
-body {
+html, body {
+  font-family: 'Roboto';
   text-align: center;
 }
 
@@ -8,12 +9,12 @@ a {
 
 .data-text {
   width: 300px;
-  margin:0 auto;
+  margin: 0 auto;
   word-wrap: break-word;
 }
 
 .no-subscription, .no-payload {
-  display:none;
+  display: none;
   transition: opacity .25s ease-in-out;
   opacity:0;
 }
