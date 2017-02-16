@@ -8,7 +8,7 @@ gulp.task('deploy', function() {
 });
 
 gulp.task('build', function () {
-  gulp.src(['src/**', '!src/js/**']).pipe(gulp.dest('dist/'));
+  gulp.src(['src/**']).pipe(gulp.dest('dist/'));
 });
 
 gulp.task('browserSync', function() {
