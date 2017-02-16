@@ -1,6 +1,4 @@
 const gulp = require('gulp'),
-    plumber = require('gulp-plumber'),
-    compilePath = 'dist/js',
     browserSync = require('browser-sync').create(),
     ghPages = require('gulp-gh-pages');
 
