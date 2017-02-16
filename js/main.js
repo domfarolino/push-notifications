@@ -2,7 +2,7 @@
 
 class AppController {
   constructor() {
-    this.backendURL = 'https://push-notifications-sw.herokuapp.com';
+    this.backendURL = 'http://bosley.club';
 
     this.registration = null;
     this.subscription = null;
