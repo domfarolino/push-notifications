@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "client": "gulp watch",
     "dev": "concurrently \"gulp watch\" \"node app.js\" --kill-others",
     "deploy": "gulp deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,15 +21,15 @@
   },
   "homepage": "https://github.com/domfarolino/push-notifications#readme",
   "dependencies": {
-    "body-parser": "*",
+    "body-parser": "^1.16.1",
     "concurrently": "^3.2.0",
     "cookie-parser": "~1.4.3",
-    "debug": "*",
+    "debug": "^2.6.1",
     "dotenv": "^4.0.0",
     "ejs": "~2.5.2",
     "express": "^4.14.0",
     "mongoose": "^4.8.3",
-    "morgan": "*",
+    "morgan": "^1.8.1",
     "web-push": "^3.0.0"
   },
   "devDependencies": {
