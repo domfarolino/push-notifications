@@ -20,16 +20,15 @@
   },
   "homepage": "https://github.com/domfarolino/push-notifications#readme",
   "dependencies": {
-    "body-parser": "~1.15.1",
+    "body-parser": "*",
     "concurrently": "^3.2.0",
     "cookie-parser": "~1.4.3",
-    "debug": "~2.2.0",
+    "debug": "*",
     "dotenv": "^4.0.0",
     "ejs": "~2.5.2",
     "express": "^4.14.0",
     "mongoose": "^4.8.3",
-    "morgan": "~1.7.0",
-    "serve-favicon": "~2.3.0",
+    "morgan": "*",
     "web-push": "^3.0.0"
   },
   "devDependencies": {
