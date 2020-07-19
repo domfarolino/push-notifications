@@ -36,7 +36,12 @@ const PushCredentials = mongoose.model('PushCredentials', pushCredentialSchema);
  * Cors header stuff
  */
 
-const allowedOrigins = ['http://localhost:3000', 'https://domfarolino.com/push-notifications', 'https://domfarolino.github.io', 'https://domfarolino.com'];
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://domfarolino.com/push-notifications',
+  'https://domfarolino.github.io',
+  'https://domfarolino.com',
+];
 
 router.use(function(request, response, next) {
   const origin = request.headers.origin;
@@ -85,6 +90,10 @@ router.get('/pushAll', function(request, response, next) {
           if (err.statusCode == '410') { // Credentials are no longer valid, push noficiation cannot be sent
             // Remove invalid credentials from database
             PushCredentials.remove({endpoint: pushCredentials.endpoint}, console.error);
+          } else {
+            // A different issue happened!
+            console.log("Error sending notifications:");
+            console.log(err);
           }
         });
 
