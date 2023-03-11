@@ -5,9 +5,6 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "client": "gulp watch",
-    "dev": "concurrently \"gulp watch\" \"node app.js\" --kill-others",
-    "deploy": "gulp deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": { "node": "16.x" },
@@ -32,11 +29,5 @@
     "mongoose": "^6.9.3",
     "morgan": "^1.8.1",
     "web-push": "^3.0.0"
-  },
-  "devDependencies": {
-    "browser-sync": "^2.13.0",
-    "gulp": "^3.9.1",
-    "gulp-gh-pages": "^0.5.4",
-    "gulp-plumber": "^1.1.0"
   }
 }
