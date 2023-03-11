@@ -1,6 +1,5 @@
 const express = require('express');
 const router  = express.Router();
-const path    = require('path');
 const webPush = require('web-push');
 const mongoose = require('mongoose');
 
