@@ -33,13 +33,13 @@ require('http').createServer(app).listen(process.env.PORT, _ => {});
 
 // Error handler
 
-// Production error handler
-// No stacktraces leaked to user
+// Development error handler
+// Will print stacktrace
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
-    error: {}
+    error: err
   });
 });
 
