@@ -3,7 +3,7 @@
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 <p align="center">
-  <img width="460" height="300" src="docs/images/notify.png">
+  <img src="docs/images/notify.png">
 </p>
 
 This app demonstrates the [web-push-libs/web-push](https://github.com/web-push-libs/web-push) NodeJS
