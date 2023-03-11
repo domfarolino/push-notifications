@@ -13,7 +13,7 @@
     "url": "git+https://github.com/domfarolino/push-notifications.git"
   },
   "author": "Dom Farolino <domfarolino@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/domfarolino/push-notifications/issues"
   },
