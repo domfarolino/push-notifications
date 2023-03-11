@@ -20,9 +20,6 @@
   "homepage": "https://github.com/domfarolino/push-notifications#readme",
   "dependencies": {
     "body-parser": "^1.16.1",
-    "concurrently": "^3.2.0",
-    "cookie-parser": "~1.4.3",
-    "debug": "^2.6.1",
     "dotenv": "^4.0.0",
     "ejs": "~2.5.2",
     "express": "^4.14.0",
