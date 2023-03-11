@@ -2,7 +2,7 @@
 
 class AppController {
   constructor() {
-    this.backendURL = 'http://push-notifications-server.glitch.me';
+    this.backendURL = 'https://push-notifications-server.glitch.me';
 
     this.registration = null;
     this.subscription = null;
