@@ -4,9 +4,11 @@ const path    = require('path');
 const webPush = require('web-push');
 const mongoose = require('mongoose');
 
-// web-push Firebase setup
-const firebaseAPIKey = process.env.FIREBASE_API_KEY;
-webPush.setGCMAPIKey(firebaseAPIKey);
+webPush.setVapidDetails(
+  'mailto:domfarolino@gmail.com',
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY,
+);
 
 // All da mongo{ose} Jazz
 const MONGO_URL = process.env.MONGO_URL;
@@ -37,8 +39,7 @@ const PushCredentials = mongoose.model('PushCredentials', pushCredentialSchema);
  */
 
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://domfarolino.com/push-notifications',
+  'http://localhost:8000',
   'https://domfarolino.github.io',
   'https://domfarolino.com',
 ];

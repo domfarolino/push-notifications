@@ -2,7 +2,7 @@
 
 class AppController {
   constructor() {
-    this.backendURL = 'https://push-notifications-sw.herokuapp.com';
+    this.backendURL = 'http://push-notifications-server.glitch.me';
 
     this.registration = null;
     this.subscription = null;
@@ -149,10 +149,30 @@ class AppController {
     }
   }
 
+  // Helper.
+  urlBase64ToUint8Array(base64String) {
+      var padding = '='.repeat((4 - base64String.length % 4) % 4);
+      var base64 = (base64String + padding)
+          .replace(/\-/g, '+')
+          .replace(/_/g, '/');
+
+      var rawData = window.atob(base64);
+      var outputArray = new Uint8Array(rawData.length);
+
+      for (var i = 0; i < rawData.length; ++i) {
+          outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+  }
+
   subscribe() {
     console.log("subscribe()");
 
-    this.registration.pushManager.subscribe({userVisibleOnly: true}).then(serviceWorkerSubscription => {
+    const subscriptionOptions = {
+      userVisibleOnly: true,
+      applicationServerKey: this.urlBase64ToUint8Array('BPitDZ5d0ljZN_gheCdwDyCM71W1AmpiwkriWGrxaYkzamjXx4jW_MkciqU5pYCuJ5qXCafG6ldY6zuOBoXVzSY'),
+    };
+    this.registration.pushManager.subscribe(subscriptionOptions).then(serviceWorkerSubscription => {
       this.subscription = serviceWorkerSubscription;
       if (this.subscription) {
         this.isSubscribed = true;

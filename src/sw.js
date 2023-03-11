@@ -10,8 +10,8 @@ self.addEventListener('push', event => {
   console.log('Push message', event);
   console.log(event.data);
 
-  let notificationTitle = 'Dom\'s Push Notifications';
-  let notificationText = 'You\'ve recieved a notification';
+  let notificationTitle = "Dom's Push Notifications";
+  let notificationText = "You've recieved a notification";
   let notificationIcon = 'images/notify.png';
 
   if (event.data) {
