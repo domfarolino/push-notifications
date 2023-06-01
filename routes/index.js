@@ -28,6 +28,9 @@ const pushCredentialSchema = mongoose.Schema({
   auth: {
     type: String,
     required: true
+  },
+  date: {
+    type: String,
   }
 });
 
@@ -104,6 +107,43 @@ router.get('/pushAll', function(request, response, next) {
   response.sendStatus(201);
 });
 
+router.get('/pushOne', function(request, response, next) {
+  const endpoint = request.query.endpoint;
+  if (!endpoint) {
+    response.status(400).send("Must provide an endpoint to notify");
+  }
+
+  const pushPayload = {
+    text: request.query.text || "Static server notification payload...",
+    icon: request.query.icon || "https://unsplash.it/200?random"
+  }
+
+  PushCredentials.findOne({endpoint}, (err, pushCredentials) => {
+    /**
+     * Map mongoose object that looks like
+     * {_id: 0, auth: a, p256dh: b, endpoint: c} to
+     * {keys: {auth: a, p256dh: b}, endpoint: c}
+     */
+    pushCredentials = [pushCredentials];
+    pushCredentials = pushCredentials.map(x => ({keys: {auth: x.auth, p256dh: x.p256dh}, endpoint: x.endpoint}))[0];
+
+      webPush.sendNotification(pushCredentials, JSON.stringify(pushPayload))
+        .catch(err => {
+          if (err.statusCode == '410') { // Credentials are no longer valid, push noficiation cannot be sent
+            // Remove invalid credentials from database
+            PushCredentials.remove({endpoint: pushCredentials.endpoint}, console.error);
+          } else {
+            // A different issue happened!
+            console.log("Error sending notifications:");
+            console.log(err);
+          }
+        });
+
+  }) // end PushCredentials.findOne()
+
+  response.sendStatus(201);
+});
+
 /* POST subscription data */
 router.post('/subscription', function(request, response, next) {
 
@@ -115,7 +155,8 @@ router.post('/subscription', function(request, response, next) {
       const newPushCredentials = {
         endpoint: request.body.endpoint,
         p256dh: request.body.p256dh,
-        auth: request.body.auth
+        auth: request.body.auth,
+        date: new Date().toISOString(),
       };
 
       console.log(newPushCredentials);

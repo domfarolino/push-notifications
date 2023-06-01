@@ -24,12 +24,12 @@ class AppController {
     this.authSecretText = document.getElementById('authSecretText');
     this.payloadData = document.getElementById('payloadData');
 
-    // Notify all
-    this.notifyAllButton = document.getElementById('notify-all-button');
-    this.notifyAllMessage = document.getElementById('notify-all-message');
-    this.notifyAllIcon = document.getElementById('notify-all-icon-url');
+    // Notify one
+    this.notifyOneButton = document.getElementById('notify-one-button');
+    this.notifyOneMessage = document.getElementById('notify-one-message');
+    this.notifyOneIcon = document.getElementById('notify-one-icon-url');
 
-    this.notifyAllButton.addEventListener('click', this.notifyHandler.bind(this));
+    this.notifyOneButton.addEventListener('click', this.notifyHandler.bind(this));
 
     this.registerServiceWorker();
 
@@ -59,23 +59,23 @@ class AppController {
   }
 
   notifyHandler() {
-    console.log('notifyAll()');
+    console.log('notifyHandler()');
     if (!this.supportsPayload) {
       this.notifyJustMe();
     } else {
-      this.notifyAll();
+      this.notifyOne();
     }
   }
 
-  notifyAll() {
-    let url = new URL(`${this.backendURL}/pushAll`);
-    let params = {text: this.notifyAllMessage.value, icon: this.notifyAllIcon.value};
+  notifyOne() {
+    let url = new URL(`${this.backendURL}/pushOne`);
+    let params = {endpoint: this.endpoint, text: this.notifyOneMessage.value, icon: this.notifyOneIcon.value};
 
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
 
     fetch(url)
       .then(() => {
-        console.log('Notifying all that support payload!');
+        console.log('Notifying this client!');
       })
       .catch(console.log);
   }
@@ -120,10 +120,10 @@ class AppController {
     if (this.isSubscribed) {
       this.endpointText.innerText = this.endpoint;
       this.subscribeButton.textContent = 'Unsubscribe';
-      this.notifyAllButton.classList.remove('no-subscription');
+      this.notifyOneButton.classList.remove('no-subscription');
     } else {
       console.log('Not subscribed');
-      this.notifyAllButton.classList.add('no-subscription');
+      this.notifyOneButton.classList.add('no-subscription');
       this.endpointText.innerText = '';
       this.subscribeButton.textContent = 'Subscribe';
     }
@@ -136,7 +136,7 @@ class AppController {
       this.publicKeyText.innerText = this.pubKey;
       this.authSecretText.innerText = this.authSecret;
 
-      this.notifyAllButton.innerText = 'Notify all subscribers';
+      this.notifyOneButton.innerText = 'Send a push notification';
     } else {
       this.payloadData.classList.add('no-payload');
       this.publicKeyTitle.classList.add('no-payload');
@@ -145,7 +145,7 @@ class AppController {
       this.publicKeyText.innerText = '';
       this.authSecretText.innerText = '';
 
-      this.notifyAllButton.innerText = 'Notify me';
+      this.notifyOneButton.innerText = 'Notify me';
     }
   }
 
