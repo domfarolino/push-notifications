@@ -2,6 +2,7 @@ const express = require('express');
 const router  = express.Router();
 const webPush = require('web-push');
 const mongoose = require('mongoose');
+const fetch = require('node-fetch');
 
 webPush.setVapidDetails(
   'mailto:domfarolino@gmail.com',
@@ -133,7 +134,6 @@ router.get('/getGeoData', async (request, response, next) => {
   try {
     const geoData = await fetch(`https://ipapi.co/${ip}/json`);
     let json = await geoData.json();
-
     json = {
       "country": json["country_name"],
       "region": json["region"],
