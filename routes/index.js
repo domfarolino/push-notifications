@@ -114,15 +114,68 @@ router.get('/pushOne', function(request, response, next) {
   }
 
   const pushPayload = {
+    title: request.query.title || "Dom's Push Notifications",
     text: request.query.text || "Static server notification payload...",
     icon: request.query.icon || "https://unsplash.it/200?random"
+  };
+
+  sendSinglePushHelper(endpoint, pushPayload);
+  response.sendStatus(201);
+});
+
+router.get('/getGeoData', async (request, response, next) => {
+  const ip = request.query.ip;
+  if (!ip) {
+    response.status(400).send("Must provide an IP address of client");
+  }
+  console.log(ip);
+
+  try {
+    const geoData = await fetch(`https://ipapi.co/${ip}/json`);
+    let json = await geoData.json();
+
+    json = {
+      "country": json["country_name"],
+      "region": json["region"],
+      "city": json["city"],
+      "zip": json["postal"],
+      "org": json["org"],
+    };
+    console.log(json);
+    response.json(json);
+  } catch(e) {
+    console.warn(e);
+    console.warn(e.toString());
+    response.status(400).send('Something went wrong');
+  }
+});
+
+router.get('/pushOneForNewVisitor', function(request, response, next) {
+  const endpoint = request.query.endpoint;
+  if (!endpoint) {
+    response.status(400).send("Must provide an endpoint to notify");
   }
 
+  const pushPayload = {
+    title: "New Visitor",
+    // A JSON-stringified body of text describing the client.
+    text: request.query.text,
+    icon: "https://avatars.githubusercontent.com/u/9669289",
+  };
+
+  sendSinglePushHelper(endpoint, pushPayload);
+  response.sendStatus(201);
+});
+
+// Helper used by different endpoints to send a single push notification to
+// `endpoint`, with an arbitrary payload `pushPayload`.
+function sendSinglePushHelper(endpoint, pushPayload) {
   PushCredentials.findOne({endpoint}, (err, pushCredentials) => {
     /**
-     * Map mongoose object that looks like
-     * {_id: 0, auth: a, p256dh: b, endpoint: c} to
-     * {keys: {auth: a, p256dh: b}, endpoint: c}
+     * Map mongoose object that looks like:
+     *   {_id: 0, auth: a, p256dh: b, endpoint: c}
+     * ... to an object that looks like, that the web push library understands.
+     *   {keys: {auth: a, p256dh: b}, endpoint: c}
      */
     pushCredentials = [pushCredentials];
     pushCredentials = pushCredentials.map(x => ({keys: {auth: x.auth, p256dh: x.p256dh}, endpoint: x.endpoint}))[0];
@@ -140,9 +193,7 @@ router.get('/pushOne', function(request, response, next) {
         });
 
   }) // end PushCredentials.findOne()
-
-  response.sendStatus(201);
-});
+}
 
 /* POST subscription data */
 router.post('/subscription', function(request, response, next) {

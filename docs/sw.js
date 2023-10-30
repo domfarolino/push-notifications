@@ -17,6 +17,7 @@ self.addEventListener('push', event => {
   if (event.data) {
     try {
       let payload = event.data.json();
+      notificationTitle = payload.title;
       notificationText = payload.text;
       notificationIcon = payload.icon;
     } catch (error) {
