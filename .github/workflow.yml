@@ -1,0 +1,22 @@
+name: Push Notifications Deploy
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, which is the CWD for
+    # the rest of the steps.
+    - uses: actions/checkout@v3
+
+    # See https://stackoverflow.com/a/45794539/3947332 for `git filter-branch`
+    - name: Push changes to Glitch remote
+      run: |
+        git remote add glitch ${{ secrets.GLITCH }}
+        git filter-branch -- --all
+        git push glitch -f
