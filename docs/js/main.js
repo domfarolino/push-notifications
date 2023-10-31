@@ -26,6 +26,7 @@ class AppController {
 
     // Notify one
     this.notifyOneButton = document.getElementById('notify-one-button');
+    this.notifyOneTitle = document.getElementById('notify-one-title');
     this.notifyOneMessage = document.getElementById('notify-one-message');
     this.notifyOneIcon = document.getElementById('notify-one-icon-url');
 
@@ -69,7 +70,12 @@ class AppController {
 
   notifyOne() {
     let url = new URL(`${this.backendURL}/pushOne`);
-    let params = {endpoint: this.endpoint, text: this.notifyOneMessage.value, icon: this.notifyOneIcon.value};
+    let params = {
+      endpoint: this.endpoint,
+      title: this.notifyOneTitle.value,
+      text: this.notifyOneMessage.value,
+      icon: this.notifyOneIcon.value
+    };
 
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
 
