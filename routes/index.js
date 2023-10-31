@@ -50,7 +50,7 @@ const allowedOrigins = [
 router.use(function(request, response, next) {
   const origin = request.headers.origin;
   if (allowedOrigins.indexOf(origin) > -1) {
-       response.setHeader('Access-Control-Allow-Origin', origin);
+    response.setHeader('Access-Control-Allow-Origin', origin);
   }
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type,X-Requested-With');
   response.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,HEAD,DELETE,OPTIONS');
@@ -74,6 +74,7 @@ router.get('/credentials', function(request, response, next) {
 
 router.get('/pushAll', function(request, response, next) {
   const pushPayload = {
+    title: request.query.title || "Dom's Push Notifications",
     text: request.query.text || "Static server notification payload...",
     icon: request.query.icon || "https://unsplash.it/200?random"
   }
