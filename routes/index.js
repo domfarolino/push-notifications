@@ -62,54 +62,53 @@ router.use(function(request, response, next) {
  * Endpoints
  */
 
-router.get('/credentials', function(request, response, next) {
+router.get('/credentials', async (request, response, next) => {
   if (request.query.key == process.env.API_KEY) {
-    PushCredentials.find((err, allPushCredentials) => {
-      response.json(allPushCredentials);
-    });
+    const allPushCredentials = await PushCredentials.find();
+    response.json(allPushCredentials);
   } else {
     response.status(403).send('Unauthenticated');
   }
 });
 
-router.get('/pushAll', function(request, response, next) {
+router.get('/pushAll', async (request, response, next) => {
   const pushPayload = {
     title: request.query.title || "Dom's Push Notifications",
     text: request.query.text || "Static server notification payload...",
     icon: request.query.icon || "https://unsplash.it/200?random"
   }
 
-  PushCredentials.find((err, allPushCredentials) => {
+  let allPushCredentials = await PushCredentials.find();
 
-    /**
-     * Map mongoose object that looks like
-     * {_id: 0, auth: a, p256dh: b, endpoint: c} to
-     * {keys: {auth: a, p256dh: b}, endpoint: c}
-     */
-    allPushCredentials = allPushCredentials.map(x => ({keys: {auth: x.auth, p256dh: x.p256dh}, endpoint: x.endpoint}));
+  /**
+   * Map mongoose object that looks like
+   * {_id: 0, auth: a, p256dh: b, endpoint: c} to
+   * {keys: {auth: a, p256dh: b}, endpoint: c}
+   */
+  allPushCredentials = allPushCredentials.map(x => ({keys: {auth: x.auth, p256dh: x.p256dh}, endpoint: x.endpoint}));
 
-    allPushCredentials.forEach(pushCredentials => {
+  allPushCredentials.forEach(pushCredentials => {
 
-      webPush.sendNotification(pushCredentials, JSON.stringify(pushPayload))
-        .catch(err => {
-          if (err.statusCode == '410') { // Credentials are no longer valid, push noficiation cannot be sent
-            // Remove invalid credentials from database
-            PushCredentials.remove({endpoint: pushCredentials.endpoint}, console.error);
-          } else {
-            // A different issue happened!
-            console.log("Error sending notifications:");
-            console.log(err);
-          }
-        });
+    webPush.sendNotification(pushCredentials, JSON.stringify(pushPayload))
+      .catch(err => {
+        // Credentials are no longer valid, push notification cannot be sent.
+        if (err.statusCode == '410') {
+          // Remove invalid credentials from database.
+          console.log(`Received 410 status code, removing ${pushCredentials.endpoint} from the database`);
+          PushCredentials.remove({endpoint: pushCredentials.endpoint}, console.error);
+        } else {
+          // A different issue happened!
+          console.log("Error sending notifications:");
+          console.log(err);
+        }
+      });
 
-    }); // end forEach()
-
-  }) // end PushCredentials.find()
+  }); // end forEach()
 
   response.sendStatus(201);
 });
 
-router.get('/pushOne', function(request, response, next) {
+router.get('/pushOne', async (request, response, next) => {
   const endpoint = request.query.endpoint;
   if (!endpoint) {
     response.status(400).send("Must provide an endpoint to notify");
@@ -121,7 +120,7 @@ router.get('/pushOne', function(request, response, next) {
     icon: request.query.icon || "https://unsplash.it/200?random"
   };
 
-  sendSinglePushHelper(endpoint, pushPayload);
+  await sendSinglePushHelper(endpoint, pushPayload);
   response.sendStatus(201);
 });
 
@@ -159,7 +158,7 @@ router.get('/getGeoData', async (request, response, next) => {
   }
 });
 
-router.get('/pushOneForNewVisitor', function(request, response, next) {
+router.get('/pushOneForNewVisitor', async (request, response, next) => {
   const endpoint = request.query.endpoint;
   if (!endpoint) {
     response.status(400).send("Must provide an endpoint to notify");
@@ -172,67 +171,66 @@ router.get('/pushOneForNewVisitor', function(request, response, next) {
     icon: "https://avatars.githubusercontent.com/u/9669289",
   };
 
-  sendSinglePushHelper(endpoint, pushPayload);
+  await sendSinglePushHelper(endpoint, pushPayload);
   response.sendStatus(201);
 });
 
 // Helper used by different endpoints to send a single push notification to
 // `endpoint`, with an arbitrary payload `pushPayload`.
-function sendSinglePushHelper(endpoint, pushPayload) {
-  PushCredentials.findOne({endpoint}, (err, pushCredentials) => {
-    /**
-     * Map mongoose object that looks like:
-     *   {_id: 0, auth: a, p256dh: b, endpoint: c}
-     * ... to an object that looks like, that the web push library understands.
-     *   {keys: {auth: a, p256dh: b}, endpoint: c}
-     */
-    pushCredentials = [pushCredentials];
-    pushCredentials = pushCredentials.map(x => ({keys: {auth: x.auth, p256dh: x.p256dh}, endpoint: x.endpoint}))[0];
+async function sendSinglePushHelper(endpoint, pushPayload) {
+  let pushCredentials = await PushCredentials.findOne({endpoint});
+  if (!pushCredentials) {
+    console.error(`Could not find push credentials associated with ${endpoint}`);
+    return;
+  }
 
-      webPush.sendNotification(pushCredentials, JSON.stringify(pushPayload))
-        .catch(err => {
-          if (err.statusCode == '410') { // Credentials are no longer valid, push noficiation cannot be sent
-            // Remove invalid credentials from database
-            PushCredentials.remove({endpoint: pushCredentials.endpoint}, console.error);
-          } else {
-            // A different issue happened!
-            console.log("Error sending notifications:");
-            console.log(err);
-          }
-        });
+  /**
+   * Map mongoose object that looks like:
+   *   {_id: 0, auth: a, p256dh: b, endpoint: c}
+   * ... to an object that looks like, that the web push library understands.
+   *   {keys: {auth: a, p256dh: b}, endpoint: c}
+   */
+  pushCredentials = [pushCredentials];
+  pushCredentials = pushCredentials.map(x => ({keys: {auth: x.auth, p256dh: x.p256dh}, endpoint: x.endpoint}))[0];
 
-  }) // end PushCredentials.findOne()
+  webPush.sendNotification(pushCredentials, JSON.stringify(pushPayload))
+    .catch(err => {
+      // Credentials are no longer valid, push notification cannot be sent.
+      if (err.statusCode == '410') {
+        // Remove invalid credentials from database.
+        PushCredentials.remove({endpoint: pushCredentials.endpoint}, console.error);
+      } else {
+        // A different issue happened!
+        console.log("Error sending notifications:");
+        console.log(err);
+      }
+    });
 }
 
 /* POST subscription data */
-router.post('/subscription', function(request, response, next) {
+router.post('/subscription', async (request, response, next) => {
+  const client = await PushCredentials.find({endpoint: request.body.endpoint});
+  console.log(client);
 
-  PushCredentials.find({endpoint: request.body.endpoint}, (err, client) => {
+  if (!client.length) {
+    const newPushCredentials = {
+      endpoint: request.body.endpoint,
+      p256dh: request.body.p256dh,
+      auth: request.body.auth,
+      date: new Date().toISOString(),
+    };
 
-    console.log(client);
+    console.log(newPushCredentials);
 
-    if (!client.length) {
-      const newPushCredentials = {
-        endpoint: request.body.endpoint,
-        p256dh: request.body.p256dh,
-        auth: request.body.auth,
-        date: new Date().toISOString(),
-      };
+    const newClient = new PushCredentials(newPushCredentials);
 
-      console.log(newPushCredentials);
-
-      const newClient = new PushCredentials(newPushCredentials);
-
-      newClient.save((error, savedClient) => {
-        if (error) {
-          return response.status(500).send(error);
-        }
-
-        response.sendStatus(201);
-      });
+    try {
+      await newClient.save();
+      response.sendStatus(201);
+    } catch (e) {
+      return response.status(500).send(e);
     }
-
-  }); // end PushCredentials.find()
+  }
 });
 
 module.exports = router;
