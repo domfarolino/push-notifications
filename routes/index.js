@@ -133,15 +133,23 @@ router.get('/getGeoData', async (request, response, next) => {
   console.log(ip);
 
   try {
-    const geoData = await fetch(`https://ipapi.co/${ip}/json`);
+    // Enable either this block.
+    const geoData = await fetch(`http://ip-api.com/json/${ip}?fields=537`);
     let json = await geoData.json();
-    json = {
-      "country": json["country_name"],
-      "region": json["region"],
-      "city": json["city"],
-      "zip": json["postal"],
-      "org": json["org"],
-    };
+    json.ip = ip;
+
+    // ...or this block.
+    // const geoData = await fetch(`https://ipapi.co/${ip}/json`);
+    // let json = await geoData.json();
+    // console.log(json);
+    // json = {
+    //   "country": json["country_name"],
+    //   "region": json["region"],
+    //   "city": json["city"],
+    //   "zip": json["postal"],
+    //   "org": json["org"],
+    //   "ip": ip,
+    // };
     console.log(json);
     response.json(json);
   } catch(e) {
