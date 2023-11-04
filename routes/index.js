@@ -59,7 +59,7 @@ const allowedOrigins = [
 
 router.use(function(request, response, next) {
   const origin = request.headers.origin;
-  if (allowedOrigins.indexOf(origin) > -1) {
+  if (allowedOrigins.includes(origin)) {
     response.setHeader('Access-Control-Allow-Origin', origin);
   }
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type,X-Requested-With');

@@ -27,6 +27,6 @@
     "mongoose": "^6.9.3",
     "morgan": "^1.8.1",
     "node-fetch": "^2.7.0",
-    "web-push": "^3.0.0"
+    "web-push": "^3.6.6"
   }
 }
