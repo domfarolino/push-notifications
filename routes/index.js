@@ -10,17 +10,7 @@ webPush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY,
 );
 
-// All da mongo{ose} Jazz
-// Setting `strictQuery` to false to enable the Mongoose 7 behavior. See
-// https://mongoosejs.com/docs/migrating_to_7.html#strictquery. In this mode,
-// Mongoose will *not* filter out query items that don't appear in the database,
-// meaning you can use queries to match items in that database with query
-// criteria that don't exist in the schema at all. This project does not rely on
-// this behavior because we *always* query with criteria that only exists in the
-// scheme. But we set this behavior to enable the Mongoose 7 behavior early, to
-// ensure we don't have problems before upgrading.
-mongoose.set('strictQuery', false);
-
+// Mongoose setup.
 const MONGO_URL = process.env.MONGO_URL;
 mongoose.connect(MONGO_URL);
 
@@ -99,17 +89,26 @@ router.get('/pushAll', async (request, response, next) => {
 
   allPushCredentials.forEach(pushCredentials => {
 
+    // TODO: Deduplicate this with the same block of code in
+    // `sendSinglePushHelper()`.
     webPush.sendNotification(pushCredentials, JSON.stringify(pushPayload))
-      .catch(err => {
-        // Credentials are no longer valid, push notification cannot be sent.
+      .catch(async err => {
+        console.warn(`Push received an error. Status code: ${err.statusCode}`);
+        console.warn(err);
+
         if (err.statusCode == '410') {
-          // Remove invalid credentials from database.
-          console.log(`Received 410 status code, removing ${pushCredentials.endpoint} from the database`);
-          PushCredentials.remove({endpoint: pushCredentials.endpoint}, console.error);
+          // Credentials are no longer valid (maybe the user revoked push
+          // permissions with their provider). Delete the expired or invalid
+          // credentials from the database.
+          try {
+            await PushCredentials.deleteOne({endpoint: pushCredentials.endpoint});
+          } catch(e) {
+            console.error(`Failed to delete credentials for ${endpoint}. Error: ${e}`);
+          }
         } else {
           // A different issue happened!
-          console.log("Error sending notifications:");
-          console.log(err);
+          console.error('Unexpected error sending push notification');
+          console.error(err);
         }
       });
 
@@ -204,15 +203,23 @@ async function sendSinglePushHelper(endpoint, pushPayload) {
   pushCredentials = pushCredentials.map(x => ({keys: {auth: x.auth, p256dh: x.p256dh}, endpoint: x.endpoint}))[0];
 
   webPush.sendNotification(pushCredentials, JSON.stringify(pushPayload))
-    .catch(err => {
-      // Credentials are no longer valid, push notification cannot be sent.
+    .catch(async err => {
+      console.warn(`Push received an error. Status code: ${err.statusCode}`);
+      console.warn(err);
+
       if (err.statusCode == '410') {
-        // Remove invalid credentials from database.
-        PushCredentials.remove({endpoint: pushCredentials.endpoint}, console.error);
+        // Credentials are no longer valid (maybe the user revoked push
+        // permissions with their provider). Delete the expired or invalid
+        // credentials from the database.
+        try {
+          await PushCredentials.deleteOne({endpoint: pushCredentials.endpoint});
+        } catch(e) {
+          console.error(`Failed to delete credentials for ${endpoint}. Error: ${e}`);
+        }
       } else {
         // A different issue happened!
-        console.log("Error sending notifications:");
-        console.log(err);
+        console.error('Unexpected error sending push notification');
+        console.error(err);
       }
     });
 }
