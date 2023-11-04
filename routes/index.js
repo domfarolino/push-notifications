@@ -11,6 +11,16 @@ webPush.setVapidDetails(
 );
 
 // All da mongo{ose} Jazz
+// Setting `strictQuery` to false to enable the Mongoose 7 behavior. See
+// https://mongoosejs.com/docs/migrating_to_7.html#strictquery. In this mode,
+// Mongoose will *not* filter out query items that don't appear in the database,
+// meaning you can use queries to match items in that database with query
+// criteria that don't exist in the schema at all. This project does not rely on
+// this behavior because we *always* query with criteria that only exists in the
+// scheme. But we set this behavior to enable the Mongoose 7 behavior early, to
+// ensure we don't have problems before upgrading.
+mongoose.set('strictQuery', false);
+
 const MONGO_URL = process.env.MONGO_URL;
 mongoose.connect(MONGO_URL);
 
