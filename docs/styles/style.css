@@ -26,3 +26,14 @@ input {
 input:focus {
   border-bottom: 1px solid #2979FF !important;
 }
+
+div#code-wrapper {
+  max-width: 550px;
+  margin: 0 auto;
+  text-align: left;
+  word-wrap: break-word;
+  background: #ededed;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 20px;
+}

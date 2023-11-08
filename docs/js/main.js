@@ -30,6 +30,17 @@ class AppController {
     this.notifyOneMessage = document.getElementById('notify-one-message');
     this.notifyOneIcon = document.getElementById('notify-one-icon-url');
 
+    // Set-up <code> wrapper text bindings.
+    this.notifyOneTitle.addEventListener('input', e => {
+      document.querySelector('#code-title').innerText = e.target.value;
+    });
+    this.notifyOneMessage.addEventListener('input', e => {
+      document.querySelector('#code-text').innerText = e.target.value;
+    });
+    this.notifyOneIcon.addEventListener('input', e => {
+      document.querySelector('#code-icon').innerText = e.target.value;
+    });
+
     this.notifyOneButton.addEventListener('click', this.notifyHandler.bind(this));
 
     this.registerServiceWorker();
@@ -125,12 +136,14 @@ class AppController {
 
     if (this.isSubscribed) {
       this.endpointText.innerText = this.endpoint;
+      document.querySelector('#code-endpoint').innerText = this.endpoint;
       this.subscribeButton.textContent = 'Unsubscribe';
       this.notifyOneButton.classList.remove('no-subscription');
     } else {
       console.log('Not subscribed');
       this.notifyOneButton.classList.add('no-subscription');
       this.endpointText.innerText = '';
+      document.querySelector('#code-endpoint').innerText = '';
       this.subscribeButton.textContent = 'Subscribe';
     }
 
