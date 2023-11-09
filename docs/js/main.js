@@ -151,6 +151,7 @@ class AppController {
       this.payloadData.classList.remove('no-payload');
       this.publicKeyTitle.classList.remove('no-payload');
       this.authSecretTitle.classList.remove('no-payload');
+      document.querySelector('#subscriber-info').style.display = 'block';
 
       this.publicKeyText.innerText = this.pubKey;
       this.authSecretText.innerText = this.authSecret;
@@ -160,6 +161,7 @@ class AppController {
       this.payloadData.classList.add('no-payload');
       this.publicKeyTitle.classList.add('no-payload');
       this.authSecretTitle.classList.add('no-payload');
+      document.querySelector('#subscriber-info').style.display = 'none';
 
       this.publicKeyText.innerText = '';
       this.authSecretText.innerText = '';

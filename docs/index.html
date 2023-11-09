@@ -63,24 +63,27 @@
     </div>
     <button class="waves-effect waves-light btn blue accent-3 no-subscription" id="notify-one-button">Notify me</button>
 
-    <p>To trigger push notifications on this device, make a web request to the following URL:</p>
-    <div id=code-wrapper>
-      <code><b>https://push-notifications-server.glitch.me</b>/pushOne?title=<span id=code-title></span>&amp;text=<span id=code-text></span>&amp;icon=<span id=code-icon></span>&amp;endpoint=<span id=code-endpoint></span></code>
+    <div id=subscriber-info>
+      <br>
+      <p>To trigger push notifications on this device from anywhere, make a web request to the following URL:</p>
+      <div id=code-wrapper>
+        <code><b>https://push-notifications-server.glitch.me</b>/pushOne?title=<span id=code-title></span>&amp;text=<span id=code-text></span>&amp;icon=<span id=code-icon></span>&amp;endpoint=<span id=code-endpoint></span></code>
+      </div>
+
+      <br>
+      <br>
+      <details>
+        <summary>Click to see subscription details</summary>
+        <h4>Endpoint + Device token:</h4>
+        <p class="data-text" id="endpoint"></p>
+
+        <h4 id="publicKeyTitle">Public Key:</h4>
+        <p class="data-text" id="publicKeyText"></p>
+
+        <h4 id="authSecretTitle">Auth Secret:</h4>
+        <p class="data-text" id="authSecretText"></p>
+      </details>
     </div>
-
-    <br>
-    <br>
-    <details>
-      <summary>Click to see subscription details</summary>
-      <h4>Endpoint + Device token:</h4>
-      <p class="data-text" id="endpoint"></p>
-
-      <h4 id="publicKeyTitle">Public Key:</h4>
-      <p class="data-text" id="publicKeyText"></p>
-
-      <h4 id="authSecretTitle">Auth Secret:</h4>
-      <p class="data-text" id="authSecretText"></p>
-    </details>
 
     <script src="js/main.js"></script>
     <script>
