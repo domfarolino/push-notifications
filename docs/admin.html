@@ -1,0 +1,66 @@
+<h1>Admin panel</h1>
+
+<link rel=stylesheet href=styles/style.css>
+
+<style>
+table {
+  border: 2px solid black;
+}
+th, td {
+  padding: 5px;
+  max-width: 350px;
+  word-wrap: break-word;
+  border: 2px solid black;
+}
+</style>
+
+<script type=module>
+  window.populateCredentials = async () => {
+    const apikey = document.querySelector('#apikey').value;
+    let credentials =
+        await fetch(`https://push-notifications-server.glitch.me/credentials?key=${apikey}`);
+    credentials = await credentials.json();
+    console.log(credentials);
+
+    const tbody = document.querySelector('tbody');
+    tbody.innerHTML = '';
+    let index = 1;
+    for (const credential of credentials) {
+      const tr = tbody.appendChild(document.createElement('tr'));
+
+      const index_td = tr.appendChild(document.createElement('td'));
+      index_td.innerText = index++;
+
+      const endpoint_td = tr.appendChild(document.createElement('td'));
+      endpoint_td.innerText = credential.endpoint;
+
+      const date_td = tr.appendChild(document.createElement('td'));
+      date_td.innerText = credential.date;
+    }
+  }
+</script>
+
+<form>
+  <input id=apikey type=text placeholder="API key">
+  <button type=submit onclick="populateCredentials()">Populate credentials</button>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Endpoint</th>
+      <th>Date registered</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<script>
+// Prevent default, so the `<button>` is wired up with the enter button, but
+// won't refresh the page when the form is "submitted".
+document.querySelector('form').addEventListener('submit', e => {
+  e.preventDefault();
+});
+</script>
