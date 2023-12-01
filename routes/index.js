@@ -234,6 +234,9 @@ router.get('/getGeoData', async (request, response, next) => {
 //   referrer:   /*foo*/,
 //   fullUrl:    /*foo*/,
 // }
+//
+// If any of the above fields are missing, they will simply appear as
+// `undefined` in the final push notification.
 router.get('/pushOneForNewVisitor', async (request, response, next) => {
   const endpoint = request.query.endpoint;
   if (!endpoint) {
