@@ -133,6 +133,49 @@ router.get('/pushOne', async (request, response, next) => {
   response.sendStatus(201);
 });
 
+/* POST subscription data */
+router.post('/subscription', async (request, response, next) => {
+  const client = await PushCredentials.find({endpoint: request.body.endpoint});
+  console.log(client);
+
+  if (!client.length) {
+    const newPushCredentials = {
+      endpoint: request.body.endpoint,
+      p256dh: request.body.p256dh,
+      auth: request.body.auth,
+      date: new Date().toISOString(),
+    };
+
+    console.log(newPushCredentials);
+
+    const newClient = new PushCredentials(newPushCredentials);
+
+    try {
+      await newClient.save();
+      response.sendStatus(201);
+    } catch (e) {
+      return response.status(500).send(e);
+    }
+  }
+});
+
+/**
+ * Generic push helpers
+ *
+ * All of this below is not *strictly* related to the push notifications
+ * project, but is a set of helpers used for other projects that rely on this
+ * backend.
+ */
+
+// This is a helper analytics endpoint. It expects a single query parameter `ip`
+// and reaches a third-party backend to extract data from the IP and send it
+// back to the client in a specific format (see documentation below, just above
+// the actual API call that this handler makes).
+//
+// The client is expected to append any other arbitrary data it wishes to this,
+// and do its own processing on it. Then the client is expected to take all of
+// the data and send it to `/pushOneForNewVisitor`, which actually sends a push
+// notification to a specific endpoint.
 router.get('/getGeoData', async (request, response, next) => {
   const ip = request.query.ip;
   if (!ip) {
@@ -141,21 +184,28 @@ router.get('/getGeoData', async (request, response, next) => {
   console.log(ip);
 
   try {
-    // Enable either this block.
+    // Note that the format of the JSON data returned from `ip-api.com` exactly
+    // matches the format that `/pushOneForNewVisitor` expects, which is
+    // important.
+    //
+    // Enable either this block...
     const geoData = await fetch(`http://ip-api.com/json/${ip}?fields=537`);
     let json = await geoData.json();
     json.ip = ip;
 
-    // ...or this block.
+    // Note that the format of the JSON data returned from `ipapi.co` needs to
+    // be formatted in a way that's consistent wtih what `/pushOneForNewVisitor`
+    // expects. That's what the `json = {...}` block below does.
+    //
+    // ...or this block:
     // const geoData = await fetch(`https://ipapi.co/${ip}/json`);
     // let json = await geoData.json();
     // console.log(json);
     // json = {
     //   "country": json["country_name"],
-    //   "region": json["region"],
     //   "city": json["city"],
-    //   "zip": json["postal"],
-    //   "org": json["org"],
+    //   "regionName": json["region"],
+    //   "isp": json["org"],
     //   "ip": ip,
     // };
     console.log(json);
@@ -167,16 +217,37 @@ router.get('/getGeoData', async (request, response, next) => {
   }
 });
 
+// This is the main endpoint used by arbitrary sites that want to push
+// notifications to an endpoint that it knows. All it must do is specify the
+// following query parameters:
+//  - endpoint
+//  - text
+//
+// Given the current, *single* use-case of this method at the moment, the `text`
+// query parameter processing is hard-coded to expect JSON in the following shape:
+// {
+//   country:    /*foo*/,
+//   city:       /*foo*/,
+//   regionName: /*foo*/,
+//   isp:        /*foo*/,
+//   ip:         /*foo*/,
+//   referrer:   /*foo*/,
+//   fullUrl:    /*foo*/,
+// }
 router.get('/pushOneForNewVisitor', async (request, response, next) => {
   const endpoint = request.query.endpoint;
   if (!endpoint) {
     response.status(400).send("Must provide an endpoint to notify");
   }
 
+  const json = JSON.parse(request.query.text);
+  const text =
+        `Country: ${json.country}, City: ${json.city}, Region: ${json.regionName}, ISP: ${json.isp}, IP: ${json.ip}, Referrer: ${json.referrer}, URL: ${json.fullUrl}`;
+
   const pushPayload = {
     title: "New Visitor",
     // A JSON-stringified body of text describing the client.
-    text: request.query.text,
+    text,
     icon: "https://avatars.githubusercontent.com/u/9669289",
   };
 
@@ -224,30 +295,5 @@ async function sendSinglePushHelper(endpoint, pushPayload) {
     });
 }
 
-/* POST subscription data */
-router.post('/subscription', async (request, response, next) => {
-  const client = await PushCredentials.find({endpoint: request.body.endpoint});
-  console.log(client);
-
-  if (!client.length) {
-    const newPushCredentials = {
-      endpoint: request.body.endpoint,
-      p256dh: request.body.p256dh,
-      auth: request.body.auth,
-      date: new Date().toISOString(),
-    };
-
-    console.log(newPushCredentials);
-
-    const newClient = new PushCredentials(newPushCredentials);
-
-    try {
-      await newClient.save();
-      response.sendStatus(201);
-    } catch (e) {
-      return response.status(500).send(e);
-    }
-  }
-});
 
 module.exports = router;

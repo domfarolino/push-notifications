@@ -16,7 +16,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 
-console.log('Creating server');
+console.log('Creating server on port', process.env.PORT);
 require('http').createServer(app).listen(process.env.PORT, _ => {});
 
 // Catch 404 and forward to error handler.
