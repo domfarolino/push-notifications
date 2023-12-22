@@ -201,6 +201,11 @@ const visitSchema = mongoose.Schema({
 
 const Visits = mongoose.model('Visits', visitSchema);
 
+router.get('/visits', async (request, response, next) => {
+  const allVisits = await Visits.find();
+  response.json(allVisits);
+});
+
 // This is a helper analytics endpoint. It expects a single query parameter `ip`
 // and reaches a third-party backend to extract data from the IP and send it
 // back to the client in a specific format (see documentation below, just above

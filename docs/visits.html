@@ -1,0 +1,76 @@
+<h1>Visits</h1>
+
+<link rel=stylesheet href=styles/style.css>
+
+<style>
+table {
+  border: 2px solid black;
+}
+th, td {
+  padding: 5px;
+  max-width: 350px;
+  word-wrap: break-word;
+  border: 2px solid black;
+}
+</style>
+
+<script type=module>
+  (async () => {
+    let visits =
+        await fetch(`https://push-notifications-server.glitch.me/visits`);
+    visits = await visits.json();
+    console.log(visits);
+
+    const tbody = document.querySelector('tbody');
+    tbody.innerHTML = '';
+    let index = 1;
+    for (const visit of visits) {
+      const tr = tbody.appendChild(document.createElement('tr'));
+
+      // #
+      tr.appendChild(document.createElement('td')).innerText = index++;
+
+      // Country
+      tr.appendChild(document.createElement('td')).innerText = visit.country;
+
+      // City
+      tr.appendChild(document.createElement('td')).innerText = visit.city;
+
+      // Region
+      tr.appendChild(document.createElement('td')).innerText = visit.region;
+
+      // ISP
+      tr.appendChild(document.createElement('td')).innerText = visit.isp;
+
+      // IP
+      tr.appendChild(document.createElement('td')).innerText = visit.ip;
+
+      // Referrer
+      tr.appendChild(document.createElement('td')).innerText = visit.referrer;
+
+      // Full URL
+      tr.appendChild(document.createElement('td')).innerText = visit.fullUrl;
+
+      // Date
+      tr.appendChild(document.createElement('td')).innerText = visit.date;
+    }
+  })();
+</script>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Country</th>
+      <th>City</th>
+      <th>Region</th>
+      <th>ISP</th>
+      <th>IP</th>
+      <th>Referrer</th>
+      <th>Full URL</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
