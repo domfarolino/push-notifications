@@ -166,6 +166,40 @@ router.post('/subscription', async (request, response, next) => {
  * project, but is a set of helpers used for other projects that rely on this
  * backend.
  */
+const visitSchema = mongoose.Schema({
+  country: {
+    type: String,
+    required: true
+  },
+  city: {
+    type: String,
+    required: true
+  },
+  region: {
+    type: String,
+    required: true
+  },
+  isp: {
+    type: String,
+    required: true
+  },
+  ip: {
+    type: String,
+    required: true
+  },
+  referrer: {
+    type: String
+  },
+  fullUrl: {
+    type: String
+  },
+  date: {
+    type: String,
+    required: true
+  }
+});
+
+const Visits = mongoose.model('Visits', visitSchema);
 
 // This is a helper analytics endpoint. It expects a single query parameter `ip`
 // and reaches a third-party backend to extract data from the IP and send it
@@ -254,6 +288,27 @@ router.get('/pushOneForNewVisitor', async (request, response, next) => {
     icon: "https://avatars.githubusercontent.com/u/9669289",
   };
 
+  // First, save the new visit into the visit database.
+  const newVisit = new Visits({
+    country: json.country,
+    city: json.city,
+    region: json.regionName,
+    isp: json.isp,
+    ip: json.ip,
+    referrer: json.referrer,
+    fullUrl: json.fullUrl,
+    date: new Date().toISOString(),
+  });
+
+  try {
+    await newVisit.save();
+    console.log('New visit saved in database');
+  } catch (e) {
+    return response.status(500).send(e);
+  }
+
+  // Second, send the push notification with the full payload to the actual
+  // device.
   await sendSinglePushHelper(endpoint, pushPayload);
   response.sendStatus(201);
 });
