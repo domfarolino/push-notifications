@@ -26,12 +26,16 @@ self.addEventListener('push', event => {
     }
   }
 
+  const clickUrl = notificationTitle == 'New Visitor' ?
+    'https://domfarolino.com/push-notifications/visits' :
+    'https://domfarolino.com';
+
   const notificationOptions = {
     body: notificationText,
     icon: notificationIcon,
     tag: 'notify-sw',
     data: {
-      url: 'https://domfarolino.com'
+      url: clickUrl
     }
   };
 
@@ -48,7 +52,7 @@ self.addEventListener('notificationclick', event => {
   // Android doesn't close the notification when you click it
   // See http://crbug.com/463146
   event.notification.close();
-  let url = 'https://domfarolino.com';
+  let url = event.notification.data.url;
   // Check if there's already a tab open with this URL.
   // If yes: focus on the tab.
   // If no: open a tab with the URL.
