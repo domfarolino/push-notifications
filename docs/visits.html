@@ -53,7 +53,7 @@ th, td {
       tr.appendChild(document.createElement('td')).innerText = visit.fullUrl;
 
       // Date
-      tr.appendChild(document.createElement('td')).innerText = visit.date;
+      tr.appendChild(document.createElement('td')).innerText = new Date(visit.date).toLocaleString();
     }
   })();
 </script>
