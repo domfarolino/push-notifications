@@ -206,6 +206,11 @@ router.get('/visits', async (request, response, next) => {
   response.json(allVisits);
 });
 
+router.get('/deleteVisit', async (request, response, next) => {
+  const result = await Visits.deleteOne({_id: request.query.id});
+  response.json(result);
+});
+
 // This is a helper analytics endpoint. It expects a single query parameter `ip`
 // and reaches a third-party backend to extract data from the IP and send it
 // back to the client in a specific format (see documentation below, just above

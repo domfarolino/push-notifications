@@ -27,6 +27,7 @@ th, td {
     let index = 1;
     for (const visit of visits.reverse()) {
       const tr = tbody.appendChild(document.createElement('tr'));
+      tr.dataset.id = visit._id;
 
       // #
       tr.appendChild(document.createElement('td')).innerText = index++;
@@ -54,6 +55,16 @@ th, td {
 
       // Date
       tr.appendChild(document.createElement('td')).innerText = new Date(visit.date).toLocaleString();
+
+      // Delete button
+      const td = document.createElement('td');
+      const button = td.appendChild(document.createElement('button'));
+      button.textContent = 'Delete';
+      button.addEventListener("click", async e => {
+        await fetch(`https://push-notifications-server.glitch.me/deleteVisit?id=${tr.dataset.id}`);
+        location.reload();
+      });
+      tr.appendChild(td);
     }
   })();
 </script>
@@ -70,6 +81,7 @@ th, td {
       <th>Referrer</th>
       <th>Full URL</th>
       <th>Date</th>
+      <th>Delete</th>
     </tr>
   </thead>
   <tbody>
