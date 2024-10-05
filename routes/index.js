@@ -202,7 +202,14 @@ const visitSchema = mongoose.Schema({
 const Visits = mongoose.model('Visits', visitSchema);
 
 router.get('/visits', async (request, response, next) => {
-  const allVisits = await Visits.find();
+  const count = await Visits.count();
+
+  let limit = 50;
+  if (request.query.all) {
+    limit = count;
+  }
+
+  const allVisits = await Visits.find().skip(count - limit);
   response.json(allVisits);
 });
 

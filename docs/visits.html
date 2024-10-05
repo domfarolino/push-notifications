@@ -1,5 +1,5 @@
 <h1>Visits</h1>
-<p>Sorted from most to least recent</p>
+<p>Sorted from most to least recent (max 50)</p>
 
 <link rel=stylesheet href=styles/style.css>
 
@@ -16,9 +16,10 @@ th, td {
 </style>
 
 <script type=module>
+  // const baseURL = `https://push-notifications-server.glitch.me`;
+  const baseURL = `http://localhost:8080`;
   (async () => {
-    let visits =
-        await fetch(`https://push-notifications-server.glitch.me/visits`);
+    let visits = await fetch(`${baseURL}/visits`);
     visits = await visits.json();
     console.log(visits);
 
@@ -61,7 +62,7 @@ th, td {
       const button = td.appendChild(document.createElement('button'));
       button.textContent = 'Delete';
       button.addEventListener("click", async e => {
-        await fetch(`https://push-notifications-server.glitch.me/deleteVisit?id=${tr.dataset.id}`);
+        await fetch(`${baseURL}/deleteVisit?id=${tr.dataset.id}`);
         location.reload();
       });
       tr.appendChild(td);
