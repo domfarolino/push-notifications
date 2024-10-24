@@ -16,8 +16,8 @@ th, td {
 </style>
 
 <script type=module>
-  // const baseURL = `https://push-notifications-server.glitch.me`;
-  const baseURL = `http://localhost:8080`;
+  const baseURL = `https://push-notifications-server.glitch.me`;
+  // const baseURL = `http://localhost:8080`;
   (async () => {
     let visits = await fetch(`${baseURL}/visits`);
     visits = await visits.json();
