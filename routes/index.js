@@ -268,6 +268,24 @@ router.get('/getGeoData', async (request, response, next) => {
   }
 });
 
+// TODO(domfarolino): Right now this is just a copy of `/pushOne`. Make this
+// save the link click entry to a database of link clicks.
+router.get('/pushOneForLinkClick', async (request, response, next) => {
+  const endpoint = request.query.endpoint;
+  if (!endpoint) {
+    response.status(400).send("Must provide an endpoint to notify");
+  }
+
+  const pushPayload = {
+    title: "Link click",
+    text: request.query.text || "Missing link body",
+    icon: request.query.icon || "https://unsplash.it/200?random"
+  };
+
+  await sendSinglePushHelper(endpoint, pushPayload);
+  response.sendStatus(201);
+});
+
 // This is the main endpoint used by arbitrary sites that want to push
 // notifications to an endpoint that it knows. All it must do is specify the
 // following query parameters:
