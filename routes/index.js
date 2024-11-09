@@ -120,7 +120,9 @@ router.get('/pushAll', async (request, response, next) => {
 router.get('/pushOne', async (request, response, next) => {
   const endpoint = request.query.endpoint;
   if (!endpoint) {
-    response.status(400).send("Must provide an endpoint to notify");
+    const error = "Must provide an endpoint to notify";
+    console.error(error);
+    response.status(400).send(error);
     return;
   }
 
@@ -155,6 +157,7 @@ router.post('/subscription', async (request, response, next) => {
       await newClient.save();
       response.sendStatus(201);
     } catch (e) {
+      console.error(e);
       return response.status(500).send(e);
     }
   }
@@ -231,7 +234,9 @@ router.get('/deleteVisit', async (request, response, next) => {
 router.get('/getGeoData', async (request, response, next) => {
   const ip = request.query.ip;
   if (!ip) {
-    response.status(400).send("Must provide an IP address of client");
+    const error = "Must provide an IP address of client";
+    console.error(error);
+    response.status(400).send(error);
     return;
   }
   console.log(ip);
@@ -275,7 +280,9 @@ router.get('/getGeoData', async (request, response, next) => {
 router.get('/pushOneForLinkClick', async (request, response, next) => {
   const endpoint = request.query.endpoint;
   if (!endpoint) {
-    response.status(400).send("Must provide an endpoint to notify");
+    const error = "Must provide an endpoint to notify";
+    console.error(error);
+    response.status(400).send(error);
     return;
   }
 
@@ -312,7 +319,9 @@ router.get('/pushOneForLinkClick', async (request, response, next) => {
 router.get('/pushOneForNewVisitor', async (request, response, next) => {
   const endpoint = request.query.endpoint;
   if (!endpoint) {
-    response.status(400).send("Must provide an endpoint to notify");
+    const error = "Must provide an endpoint to notify";
+    console.error(error);
+    response.status(400).send(error);
     return;
   }
 
@@ -343,6 +352,7 @@ router.get('/pushOneForNewVisitor', async (request, response, next) => {
     await newVisit.save();
     console.log('New visit saved in database');
   } catch (e) {
+    console.error(e);
     return response.status(500).send(e);
   }
 
