@@ -121,6 +121,7 @@ router.get('/pushOne', async (request, response, next) => {
   const endpoint = request.query.endpoint;
   if (!endpoint) {
     response.status(400).send("Must provide an endpoint to notify");
+    return;
   }
 
   const pushPayload = {
@@ -231,6 +232,7 @@ router.get('/getGeoData', async (request, response, next) => {
   const ip = request.query.ip;
   if (!ip) {
     response.status(400).send("Must provide an IP address of client");
+    return;
   }
   console.log(ip);
 
@@ -274,6 +276,7 @@ router.get('/pushOneForLinkClick', async (request, response, next) => {
   const endpoint = request.query.endpoint;
   if (!endpoint) {
     response.status(400).send("Must provide an endpoint to notify");
+    return;
   }
 
   const pushPayload = {
@@ -310,6 +313,7 @@ router.get('/pushOneForNewVisitor', async (request, response, next) => {
   const endpoint = request.query.endpoint;
   if (!endpoint) {
     response.status(400).send("Must provide an endpoint to notify");
+    return;
   }
 
   const json = JSON.parse(request.query.text);
@@ -353,7 +357,9 @@ router.get('/pushOneForNewVisitor', async (request, response, next) => {
 async function sendSinglePushHelper(endpoint, pushPayload) {
   let pushCredentials = await PushCredentials.findOne({endpoint});
   if (!pushCredentials) {
-    console.error(`Could not find push credentials associated with ${endpoint}`);
+    const error = `Could not find push credentials associated with ${endpoint}`;
+    console.error(error);
+    response.status(400).send(error);
     return;
   }
 
