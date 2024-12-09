@@ -206,7 +206,7 @@ const visitSchema = mongoose.Schema({
 const Visits = mongoose.model('Visits', visitSchema);
 
 router.get('/visits', async (request, response, next) => {
-  const count = await Visits.count();
+  const count = await Visits.countDocuments();
 
   let limit = 50;
   if (request.query.all) {
