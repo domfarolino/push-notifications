@@ -321,11 +321,17 @@ router.get('/pushOneForNewVisitor', async (request, response, next) => {
   if (!endpoint) {
     const error = "Must provide an endpoint to notify";
     console.error(error);
-    response.status(400).send(error);
-    return;
+    return response.status(400).send(error);
   }
 
-  const json = JSON.parse(request.query.text);
+  let json = {};
+  try {
+    json = JSON.parse(request.query.text);
+  } catch (e) {
+    console.error(e);
+    await sendErrorPushNotification(request, endpoint, `Error parsing as JSON: ${request.query.text}`);
+    return response.status(500).send(e);
+  }
   const text =
         `Country: ${json.country}, City: ${json.city}, Region: ${json.regionName}, ISP: ${json.isp}, IP: ${json.ip}, Referrer: ${json.referrer}, URL: ${json.fullUrl}`;
 
@@ -353,6 +359,7 @@ router.get('/pushOneForNewVisitor', async (request, response, next) => {
     console.log('New visit saved in database');
   } catch (e) {
     console.error(e);
+    await sendErrorPushNotification(request, endpoint, e);
     return response.status(500).send(e);
   }
 
@@ -361,6 +368,17 @@ router.get('/pushOneForNewVisitor', async (request, response, next) => {
   await sendSinglePushHelper(endpoint, pushPayload);
   response.sendStatus(201);
 });
+
+async function sendErrorPushNotification(request, endpoint, text) {
+  const pushPayload = {
+    title: `⚠️ Server error: ${request.path}⚠️`,
+    // A JSON-stringified body of text describing the client.
+    text,
+    icon: "https://avatars.githubusercontent.com/u/9669289",
+  };
+
+  await sendSinglePushHelper(endpoint, pushPayload);
+}
 
 // Helper used by different endpoints to send a single push notification to
 // `endpoint`, with an arbitrary payload `pushPayload`.
