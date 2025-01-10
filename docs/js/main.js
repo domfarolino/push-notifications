@@ -38,7 +38,7 @@ class AppController {
       document.querySelector('#code-text').innerText = e.target.value;
     });
     this.notifyOneIcon.addEventListener('input', e => {
-      document.querySelector('#code-icon').innerText = e.target.value;
+      document.querySelector('#code-icon').innerText = encodeURIComponent(e.target.value);
     });
 
     this.notifyOneButton.addEventListener('click', this.notifyHandler.bind(this));

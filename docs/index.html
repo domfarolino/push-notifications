@@ -65,15 +65,24 @@
 
     <div id=subscriber-info>
       <br>
-      <p>To trigger push notifications on this device from anywhere, make a web request to the following URL:</p>
-      <div id=code-wrapper>
-        <code><b>https://push-notifications-server.glitch.me</b>/pushOne?title=<span id=code-title></span>&amp;text=<span id=code-text></span>&amp;icon=<span id=code-icon></span>&amp;endpoint=<span id=code-endpoint></span></code>
-      </div>
+      <details>
+        <summary>Click here to view code that triggers a push notification from anywhere</summary>
+        <div id=code-wrapper>
+          <code>
+            const url =
+            <br>
+            "<b>https://push-notifications-server.glitch.me</b>/pushOne?title=<span id=code-title></span>&amp;text=<span id=code-text></span>&amp;icon=<span id=code-icon></span>&amp;endpoint=<span id=code-endpoint></span>";
+            <br>
+            <br>
+            <b>fetch</b>(url, {mode: 'no-cors'});
+          </code>
+        </div>
+      </details>
 
       <br>
       <br>
       <details>
-        <summary>Click to see subscription details</summary>
+        <summary>Click here to see subscription details</summary>
         <h4>Endpoint + Device token:</h4>
         <p class="data-text" id="endpoint"></p>
 
