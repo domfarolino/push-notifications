@@ -2,7 +2,10 @@
 
 class AppController {
   constructor() {
-    this.backendURL = 'https://push-notifications-server.glitch.me';
+    const isLocalhost = location.hostname === 'localhost';
+    const BACKEND_URL = isLocalhost ? 'http://localhost:8080' : 'https://push-notifications-server.glitch.me';
+
+    this.backendURL = BACKEND_URL;
 
     this.registration = null;
     this.subscription = null;
