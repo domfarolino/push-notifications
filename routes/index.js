@@ -252,8 +252,22 @@ router.get('/visits', async (request, response, next) => {
 });
 
 router.get('/deleteVisit', async (request, response, next) => {
-  const result = await Visits.deleteOne({_id: request.query.id});
-  response.json(result);
+  const visit = await Visits.findOne({_id: request.query.id});
+
+  if (!visit) {
+    return response.status(404).json({
+      error: 'Visit not found'
+    });
+  }
+
+  if (visit.sessionId) {
+    // Delete all link clicks with matching sessionId.
+    await LinkClicks.deleteMany({sessionId: visit.sessionId});
+  }
+
+  // Delete the visit itself using the document we already have.
+  await visit.deleteOne();
+  response.json({ acknowledged: true, deletedCount: 1 });
 });
 
 // This is a helper analytics endpoint. It expects a single query parameter `ip`

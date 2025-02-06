@@ -106,6 +106,14 @@
         location.reload();
       });
       tr.appendChild(td);
+
+      // Add click handler for expansion
+      tr.addEventListener('click', (e) => {
+        // Don't trigger expansion when clicking buttons
+        if (e.target.tagName !== 'BUTTON') {
+          tr.classList.toggle('expanded');
+        }
+      });
     }
   })();
 </script>

@@ -181,20 +181,21 @@ p {
     display: block;
   }
 
-  thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
+  thead {
+    display: none;
   }
 
   tr {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12);
     border-radius: 8px;
     background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
   }
 
   td {
+    display: none;
     position: relative;
     padding-left: 50%;
     border: none;
@@ -225,38 +226,144 @@ p {
 
   /* Special handling for link clicks cell */
   .link-clicks-cell {
-    padding: 0 !important;
-    display: flex !important;
-    justify-content: flex-end;
+    padding: 16px !important;
+    padding-left: 50% !important;
   }
 
   .link-clicks-toggle {
     width: auto;
-    margin: 8px 16px;
+    margin: 0;
     border-radius: 4px;
   }
 
   /* Adjust the expanded link clicks row */
-  .link-clicks-row td {
-    padding: 0;
+  .link-clicks-row {
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
   }
 
-  .link-clicks-row {
-    margin-bottom: 0;
-    box-shadow: none;
+  .link-clicks-row td {
+    padding: 0 16px 16px 16px !important;
   }
 
   .link-clicks-table {
-    margin: 8px 16px;
+    display: table;
+    width: 100%;
+    background: white;
+    margin: 8px 0;
     border-radius: 4px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   }
 
-  .link-clicks-table td {
-    padding-left: 50%;
+  .link-clicks-table thead {
+    display: table-header-group;
   }
 
-  .link-clicks-table td:nth-of-type(1):before { content: "Link Text"; }
-  .link-clicks-table td:nth-of-type(2):before { content: "Click Time"; }
+  .link-clicks-table tbody {
+    display: table-row-group;
+  }
+
+  .link-clicks-table tr {
+    display: table-row;
+  }
+
+  .link-clicks-table th,
+  .link-clicks-table td {
+    display: table-cell;
+    padding: 12px 16px;
+    width: auto;
+    border: none;
+  }
+
+  /* Remove any pseudo-elements from the link clicks table */
+  .link-clicks-table td:before,
+  .link-clicks-table th:before {
+    display: none;
+  }
+
+  /* Show only city cell by default */
+  td:nth-of-type(3) {
+    display: block;
+    padding: 16px;
+    padding-left: 50%;
+    font-size: 1.1em;
+    font-weight: 500;
+  }
+
+  td:nth-of-type(3):after {
+    content: '\25BC';  /* Unicode for black down-pointing triangle */
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+    color: #1a73e8;
+  }
+
+  tr.expanded td {
+    display: block; /* Show all cells when expanded */
+  }
+
+  tr.expanded td:nth-of-type(3):after {
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  /* Link clicks styles for mobile */
+  .link-clicks-row {
+    display: none;
+    margin: 0;
+    background: none;
+    box-shadow: none;
+    width: 100%;
+  }
+
+  .link-clicks-row.active {
+    display: block;
+    height: auto;
+    overflow: visible;
+  }
+
+  .link-clicks-row td {
+    display: block;
+    width: 100%;
+    padding: 16px !important;
+  }
+
+  .link-clicks-table {
+    display: table;
+    width: 100%;
+    background: white;
+    margin: 8px 0;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+
+  .link-clicks-table thead {
+    display: table-header-group;
+  }
+
+  .link-clicks-table tbody {
+    display: table-row-group;
+  }
+
+  .link-clicks-table tr {
+    display: table-row;
+  }
+
+  .link-clicks-table th,
+  .link-clicks-table td {
+    display: table-cell;
+    padding: 12px 16px;
+    width: auto;
+    border: none;
+  }
+
+  /* Remove any pseudo-elements from the link clicks table */
+  .link-clicks-table td:before,
+  .link-clicks-table th:before {
+    display: none;
+  }
 }
