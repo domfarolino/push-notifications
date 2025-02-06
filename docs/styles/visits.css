@@ -1,0 +1,369 @@
+body {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+  overflow-x: hidden;
+}
+
+h1 {
+  color: #1a73e8;
+  font-weight: 400;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  margin: 20px 0;
+}
+
+th, td {
+  padding: 16px;
+  text-align: left;
+  max-width: 200px;
+  overflow: hidden;
+  word-wrap: break-word;
+  border-bottom: 1px solid #eeeeee;
+}
+
+th {
+  background-color: #1a73e8;
+  color: white;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+}
+
+tr:hover {
+  background-color: #f5f5f5;
+}
+
+button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #c82333;
+}
+
+p {
+  color: #5f6368;
+  font-size: 0.9rem;
+}
+
+/* Link clicks styles */
+.link-clicks-cell {
+  padding: 0 !important;
+}
+
+.link-clicks-toggle {
+  background: #1a73e8;
+  color: white;
+  border: none;
+  padding: 16px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.link-clicks-toggle:hover {
+  background: #1557b0;
+}
+
+.link-clicks-content {
+  display: none;
+}
+
+.link-clicks-content.active {
+  display: table;
+  width: 100%;
+}
+
+.link-clicks-table {
+  width: 100%;
+  border-top: 1px solid #eee;
+}
+
+.link-clicks-table td {
+  background: #f8f9fa;
+  font-size: 0.9em;
+}
+
+.link-clicks-table th {
+  background: #e8eaed;
+  color: #000;
+  font-size: 0.8em;
+  text-transform: uppercase;
+}
+
+.link-clicks-row {
+  display: none;
+}
+
+.link-clicks-row.active {
+  display: table-row;
+}
+
+.link-clicks-cell {
+  padding: 0 !important;
+}
+
+.link-clicks-toggle {
+  background: #1a73e8;
+  color: white;
+  border: none;
+  padding: 16px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.link-clicks-toggle:hover {
+  background: #1557b0;
+}
+
+.link-clicks-content {
+  display: none;
+}
+
+.link-clicks-content.active {
+  display: table;
+  width: 100%;
+}
+
+.link-clicks-table {
+  width: 100%;
+  border-top: 1px solid #eee;
+}
+
+.link-clicks-table td {
+  background: #f8f9fa;
+  font-size: 0.9em;
+}
+
+.link-clicks-table th {
+  background: #e8eaed;
+  color: #000;
+  font-size: 0.8em;
+  text-transform: uppercase;
+}
+
+.link-clicks-row {
+  display: none;
+}
+
+.link-clicks-row.active {
+  display: table-row;
+}
+
+@media screen and (max-width: 1000px) {
+  table, thead, tbody, tr, th, td {
+    display: block;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tr {
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  td {
+    display: none;
+    position: relative;
+    padding-left: 50%;
+    border: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  td:before {
+    position: absolute;
+    left: 16px;
+    width: 45%;
+    padding-right: 10px;
+    font-weight: 500;
+    color: #1a73e8;
+  }
+
+  /* Add labels for each cell */
+  td:nth-of-type(1):before { content: "#"; }
+  td:nth-of-type(2):before { content: "Country"; }
+  td:nth-of-type(3):before { content: "City"; }
+  td:nth-of-type(4):before { content: "Region"; }
+  td:nth-of-type(5):before { content: "ISP"; }
+  td:nth-of-type(6):before { content: "IP"; }
+  td:nth-of-type(7):before { content: "Referrer"; }
+  td:nth-of-type(8):before { content: "Full URL"; }
+  td:nth-of-type(9):before { content: "Date"; }
+  td:nth-of-type(10):before { content: "Link Clicks"; }
+  td:nth-of-type(11):before { content: "Actions"; }
+
+  /* Special handling for link clicks cell */
+  .link-clicks-cell {
+    padding: 16px !important;
+    padding-left: 50% !important;
+  }
+
+  .link-clicks-toggle {
+    width: auto;
+    margin: 0;
+    border-radius: 4px;
+  }
+
+  /* Adjust the expanded link clicks row */
+  .link-clicks-row {
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .link-clicks-row td {
+    padding: 0 16px 16px 16px !important;
+  }
+
+  .link-clicks-table {
+    display: table;
+    width: 100%;
+    background: white;
+    margin: 8px 0;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+
+  .link-clicks-table thead {
+    display: table-header-group;
+  }
+
+  .link-clicks-table tbody {
+    display: table-row-group;
+  }
+
+  .link-clicks-table tr {
+    display: table-row;
+  }
+
+  .link-clicks-table th,
+  .link-clicks-table td {
+    display: table-cell;
+    padding: 12px 16px;
+    width: auto;
+    border: none;
+  }
+
+  /* Remove any pseudo-elements from the link clicks table */
+  .link-clicks-table td:before,
+  .link-clicks-table th:before {
+    display: none;
+  }
+
+  /* Show only city cell by default */
+  td:nth-of-type(3) {
+    display: block;
+    padding: 16px;
+    padding-left: 50%;
+    font-size: 1.1em;
+    font-weight: 500;
+  }
+
+  td:nth-of-type(3):after {
+    content: '\25BC';  /* Unicode for black down-pointing triangle */
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+    color: #1a73e8;
+  }
+
+  tr.expanded td {
+    display: block; /* Show all cells when expanded */
+  }
+
+  tr.expanded td:nth-of-type(3):after {
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  /* Link clicks styles for mobile */
+  .link-clicks-row {
+    display: none;
+    margin: 0;
+    background: none;
+    box-shadow: none;
+    width: 100%;
+  }
+
+  .link-clicks-row.active {
+    display: block;
+    height: auto;
+    overflow: visible;
+  }
+
+  .link-clicks-row td {
+    display: block;
+    width: 100%;
+    padding: 16px !important;
+  }
+
+  .link-clicks-table {
+    display: table;
+    width: 100%;
+    background: white;
+    margin: 8px 0;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+
+  .link-clicks-table thead {
+    display: table-header-group;
+  }
+
+  .link-clicks-table tbody {
+    display: table-row-group;
+  }
+
+  .link-clicks-table tr {
+    display: table-row;
+  }
+
+  .link-clicks-table th,
+  .link-clicks-table td {
+    display: table-cell;
+    padding: 12px 16px;
+    width: auto;
+    border: none;
+  }
+
+  /* Remove any pseudo-elements from the link clicks table */
+  .link-clicks-table td:before,
+  .link-clicks-table th:before {
+    display: none;
+  }
+}

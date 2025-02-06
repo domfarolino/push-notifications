@@ -2,22 +2,12 @@
 <p>Sorted from most to least recent (max 50)</p>
 
 <link rel=stylesheet href=styles/style.css>
-
-<style>
-table {
-  border: 2px solid black;
-}
-th, td {
-  padding: 5px;
-  max-width: 350px;
-  word-wrap: break-word;
-  border: 2px solid black;
-}
-</style>
+<link rel=stylesheet href=styles/visits.css>
 
 <script type=module>
-  const baseURL = `https://push-notifications-server.glitch.me`;
-  // const baseURL = `http://localhost:8080`;
+  const isLocalhost = location.hostname === 'localhost';
+  const baseURL = isLocalhost ? 'http://localhost:8080' : 'https://push-notifications-server.glitch.me';
+
   (async () => {
     let visits = await fetch(`${baseURL}/visits`);
     visits = await visits.json();
@@ -26,7 +16,7 @@ th, td {
     const tbody = document.querySelector('tbody');
     tbody.innerHTML = '';
     let index = 1;
-    for (const visit of visits.reverse()) {
+    for (const visit of visits) {
       const tr = tbody.appendChild(document.createElement('tr'));
       tr.dataset.id = visit._id;
 
@@ -57,6 +47,56 @@ th, td {
       // Date
       tr.appendChild(document.createElement('td')).innerText = new Date(visit.date).toLocaleString();
 
+      // Link clicks cell
+      const linkClicksCell = tr.appendChild(document.createElement('td'));
+      linkClicksCell.className = 'link-clicks-cell';
+
+      if (visit.linkClicks && visit.linkClicks.length > 0) {
+        const toggleButton = document.createElement('button');
+        toggleButton.className = 'link-clicks-toggle';
+        toggleButton.innerText = `${visit.linkClicks.length} Click${visit.linkClicks.length === 1 ? '' : 's'}`;
+
+        // Create a new row for link clicks content
+        const linkClicksRow = document.createElement('tr');
+        linkClicksRow.className = 'link-clicks-row';
+        const contentCell = document.createElement('td');
+        contentCell.colSpan = 6; // Reduced from 11 to 6 columns
+        contentCell.style.textAlign = 'center'; // Center the table in the available space
+
+        const clicksTable = document.createElement('table');
+        clicksTable.className = 'link-clicks-table';
+
+        // Add header row
+        const thead = clicksTable.createTHead();
+        const headerRow = thead.insertRow();
+        headerRow.innerHTML = `
+          <th>Link Text</th>
+          <th>Click Time</th>
+        `;
+
+        // Add click rows
+        const tbody = clicksTable.createTBody();
+        visit.linkClicks.forEach(click => {
+          const row = tbody.insertRow();
+          row.innerHTML = `
+            <td>${click.text}</td>
+            <td>${new Date(click.date).toLocaleString()}</td>
+          `;
+        });
+
+        contentCell.appendChild(clicksTable);
+        linkClicksRow.appendChild(contentCell);
+        tr.parentNode.insertBefore(linkClicksRow, tr.nextSibling);
+
+        toggleButton.addEventListener('click', () => {
+          linkClicksRow.classList.toggle('active');
+        });
+
+        linkClicksCell.appendChild(toggleButton);
+      } else {
+        linkClicksCell.innerText = 'No clicks';
+      }
+
       // Delete button
       const td = document.createElement('td');
       const button = td.appendChild(document.createElement('button'));
@@ -66,25 +106,36 @@ th, td {
         location.reload();
       });
       tr.appendChild(td);
+
+      // Add click handler for expansion
+      tr.addEventListener('click', (e) => {
+        // Don't trigger expansion when clicking buttons
+        if (e.target.tagName !== 'BUTTON') {
+          tr.classList.toggle('expanded');
+        }
+      });
     }
   })();
 </script>
 
-<table>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Country</th>
-      <th>City</th>
-      <th>Region</th>
-      <th>ISP</th>
-      <th>IP</th>
-      <th>Referrer</th>
-      <th>Full URL</th>
-      <th>Date</th>
-      <th>Delete</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Country</th>
+        <th>City</th>
+        <th>Region</th>
+        <th>ISP</th>
+        <th>IP</th>
+        <th>Referrer</th>
+        <th>Full URL</th>
+        <th>Date</th>
+        <th>Link Clicks</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>

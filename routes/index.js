@@ -197,6 +197,25 @@ const visitSchema = mongoose.Schema({
   fullUrl: {
     type: String
   },
+  sessionId: {
+    type: String,
+    required: true
+  },
+  date: {
+    type: String,
+    required: true
+  }
+});
+
+const linkClickSchema = mongoose.Schema({
+  sessionId: {
+    type: String,
+    required: true
+  },
+  text: {
+    type: String,
+    required: true
+  },
   date: {
     type: String,
     required: true
@@ -204,22 +223,51 @@ const visitSchema = mongoose.Schema({
 });
 
 const Visits = mongoose.model('Visits', visitSchema);
+const LinkClicks = mongoose.model('LinkClicks', linkClickSchema);
 
 router.get('/visits', async (request, response, next) => {
-  const count = await Visits.countDocuments();
-
   let limit = 50;
   if (request.query.all) {
-    limit = count;
+    limit = await Visits.countDocuments();
   }
 
-  const allVisits = await Visits.find().skip(count - limit);
-  response.json(allVisits);
+  // Get the visits in reverse chronological order (newest first).
+  const allVisits = await Visits.find()
+    .sort({ $natural: -1 })
+    .limit(limit);
+
+  // Create an array of enriched visit objects with their link clicks.
+  const enrichedVisits = await Promise.all(allVisits.map(async visit => {
+    // Find all link clicks for this visit's session.
+    const linkClicks = await LinkClicks.find({ sessionId: visit.sessionId });
+
+    // Convert the Mongoose document to a plain object and add link clicks.
+    const visitObj = visit.toObject();
+    visitObj.linkClicks = linkClicks;
+
+    return visitObj;
+  }));
+
+  response.json(enrichedVisits);
 });
 
 router.get('/deleteVisit', async (request, response, next) => {
-  const result = await Visits.deleteOne({_id: request.query.id});
-  response.json(result);
+  const visit = await Visits.findOne({_id: request.query.id});
+
+  if (!visit) {
+    return response.status(404).json({
+      error: 'Visit not found'
+    });
+  }
+
+  if (visit.sessionId) {
+    // Delete all link clicks with matching sessionId.
+    await LinkClicks.deleteMany({sessionId: visit.sessionId});
+  }
+
+  // Delete the visit itself using the document we already have.
+  await visit.deleteOne();
+  response.json({ acknowledged: true, deletedCount: 1 });
 });
 
 // This is a helper analytics endpoint. It expects a single query parameter `ip`
@@ -275,10 +323,11 @@ router.get('/getGeoData', async (request, response, next) => {
   }
 });
 
-// TODO(domfarolino): Right now this is just a copy of `/pushOne`. Make this
-// save the link click entry to a database of link clicks.
 router.get('/pushOneForLinkClick', async (request, response, next) => {
   const endpoint = request.query.endpoint;
+  const sessionId = request.query.sessionId;
+  const text = request.query.text;
+
   if (!endpoint) {
     const error = "Must provide an endpoint to notify";
     console.error(error);
@@ -286,11 +335,42 @@ router.get('/pushOneForLinkClick', async (request, response, next) => {
     return;
   }
 
+  if (!sessionId) {
+    const error = "Must provide a sessionId";
+    console.error(error);
+    await sendErrorPushNotification(request, endpoint, error);
+    response.status(400).send(error);
+    return;
+  }
+
+  if (!text) {
+    const error = "Must provide link body text";
+    console.error(error);
+    await sendErrorPushNotification(request, endpoint, error);
+    response.status(400).send(error);
+    return;
+  }
+
   const pushPayload = {
     title: "Link click",
-    text: request.query.text || "Missing link body",
+    text,
     icon: request.query.icon || "https://unsplash.it/200?random"
   };
+
+  // Save the link click to database.
+  const newLinkClick = new LinkClicks({
+    sessionId,
+    text,
+    date: new Date().toISOString(),
+  });
+
+  try {
+    await newLinkClick.save();
+  } catch (e) {
+    console.error(e);
+    await sendErrorPushNotification(request, endpoint, e);
+    return response.status(500).send(e);
+  }
 
   await sendSinglePushHelper(endpoint, pushPayload);
   response.sendStatus(201);
@@ -318,9 +398,18 @@ router.get('/pushOneForLinkClick', async (request, response, next) => {
 // `undefined` in the final push notification.
 router.get('/pushOneForNewVisitor', async (request, response, next) => {
   const endpoint = request.query.endpoint;
+  const sessionId = request.query.sessionId;
+
   if (!endpoint) {
     const error = "Must provide an endpoint to notify";
     console.error(error);
+    return response.status(400).send(error);
+  }
+
+  if (!sessionId) {
+    const error = "Must provide a sessionId";
+    console.error(error);
+    await sendErrorPushNotification(request, endpoint, error);
     return response.status(400).send(error);
   }
 
@@ -351,6 +440,7 @@ router.get('/pushOneForNewVisitor', async (request, response, next) => {
     ip: json.ip,
     referrer: json.referrer,
     fullUrl: json.fullUrl,
+    sessionId: sessionId,
     date: new Date().toISOString(),
   });
 
