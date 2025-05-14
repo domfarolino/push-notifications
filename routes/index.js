@@ -477,7 +477,6 @@ async function sendSinglePushHelper(endpoint, pushPayload) {
   if (!pushCredentials) {
     const error = `Could not find push credentials associated with ${endpoint}`;
     console.error(error);
-    response.status(400).send(error);
     return;
   }
 
