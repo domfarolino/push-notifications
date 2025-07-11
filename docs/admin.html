@@ -18,7 +18,7 @@ th, td {
   window.populateCredentials = async () => {
     const apikey = document.querySelector('#apikey').value;
     let credentials =
-        await fetch(`https://push-notifications-server.glitch.me/credentials?key=${apikey}`);
+        await fetch(`https://push-notifications-personal-uc8qd.ondigitalocean.app/credentials?key=${apikey}`);
     credentials = await credentials.json();
     console.log(credentials);
 
