@@ -3,7 +3,7 @@
 class AppController {
   constructor() {
     const isLocalhost = location.hostname === 'localhost';
-    const BACKEND_URL = isLocalhost ? 'http://localhost:8080' : 'https://push-notifications-server.glitch.me';
+    const BACKEND_URL = isLocalhost ? 'http://localhost:8080' : 'https://push-notifications-personal-uc8qd.ondigitalocean.app';
 
     this.backendURL = BACKEND_URL;
 
